@@ -3,72 +3,12 @@ import ssd1306
 import time
 import WeightedAverageCalculator
 
-
-class PageTracker:
-    """A simple system purley for tracking where the user is in a GUI. Track pages and flags. Display generation based on the GUI position is handled separately."""
-
-    def __init__(self) -> None:
-        self._position:list[str] = []
-        self._flags:list[tuple[str, str]] = []
-
-    def advance(self, next:str) -> None:
-        self._position.append(next)
-        self._selection = None
-
-    def retreat(self) -> None:
-        if len(self._position) > 0:
-            self._position.pop(len(self._position) - 1) # remove the last one
-            self._selection = None
-
-    @property
-    def position(self) -> str:
-        ToReturn:str = ""
-        for pos in self._position:
-            ToReturn = ToReturn + pos + "."
-        if len(ToReturn) > 0:
-            ToReturn = ToReturn[0:-1]
-        return ToReturn
-    
-    def set_flag(self, name:str, value:str) -> None:
-        """Add or update a flag."""
-        self.remove_flag(name)
-        self._flags.append((name, value))
-
-    def remove_flag(self, name:str) -> None:
-        """Remove a flag by name."""
-        ToRemoveIndex:int = None
-        for i in range(0, len(self._flags)):
-            if self._flags[i][0] == name:
-                print("This one matches! " + str(self._flags[i]) +  " at index " + str(i))
-                ToRemoveIndex = i
-        if ToRemoveIndex != None:
-            self._flags.pop(ToRemoveIndex)
-
-    def get_flag(self, name:str) -> str:
-        """Retrieve flag value based on name."""
-        for flag in self._flags:
-            if flag[0] == name:
-                return flag[1]
-        return None
-    
-    def clear_flags(self) -> None:
-        """Delete all flags."""
-        self._flags = []
-
-    def is_flag(self, name:str, value:str) -> bool:
-        """Checks if a flag is set to a certain value."""
-        flag:tuple[str, str] = self.get_flag(name)
-        if flag == None:
-            return False
-        else:
-            return flag == value
-
 class DisplayController:
     def __init__(self, oled:ssd1306.SSD1306_I2C) -> None:
         self._oled = oled
 
-        # set up PageTracker
-        self.PageTracker = PageTracker()
+        # a unique identifier string establishing the setting or "screen status" that is currently being displayed
+        self.page:str = "home"
 
         # for home page - battery levels
         self.controller_soc:float = 0.0 # controller battery state of charge, as a percentage
@@ -95,9 +35,9 @@ class DisplayController:
 
         # preliminary
         self._oled.fill(0)
-        pos:str = self.PageTracker.position
+        pos:str = self.page
 
-        if pos == "home":
+        if pos[0:4] == "home":
 
             # determine state of charge display value and ensure each are at least 3 characters
             controller_soc_value_display:str = str(int(round(min(max(self.controller_soc, 0.0), 0.99) * 100, 0))) + "%"
@@ -119,14 +59,14 @@ class DisplayController:
             self._oled.text("config", 63, 44) # See RF parameters
             self._oled.text("info", 71, 56) # info screen (system version, etc.)
 
-            # show carrot if stats is selected
-            if self.PageTracker.is_flag("selection", "stats"):
+            # Put selection on selection if there is any
+            if self.page == "home.stats":
                 self._oled.text("+", 59, 32)
                 self._oled.text("+", 107, 32)
-            elif self.PageTracker.is_flag("selection", "config"):
+            elif self.page == "home.config":
                 self._oled.text("+", 55, 44)
                 self._oled.text("+", 111, 44)
-            elif self.PageTracker.is_flag("selection", "info"):
+            elif self.page == "home.info":
                 self._oled.text("+", 63, 56)
                 self._oled.text("+", 103, 56)
 
@@ -185,8 +125,7 @@ class DisplayController:
             oled.text("Tim Hanewich", 16, 32)
             
             # back button (selected)
-            if not self.PageTracker.is_flag("bootup", ""):
-                oled.text("+back+", 40, 56)
+            oled.text("+back+", 40, 56)
 
         else:
             oled.text("?", 0, 0)
@@ -199,9 +138,20 @@ class ControllerBrain:
     def __init__(self, oled:ssd1306.SSD1306_I2C) -> None:
         self.DisplayController:DisplayController = DisplayController(oled)
 
-    def boot(self) -> None:
-        self.DisplayController.PageTracker._position = []
-        self.DisplayController.PageTracker.advance("home")
+    def display(self) -> None:
+        self.DisplayController.display()
+
+    def goto(self, page:str) -> None:
+        self.DisplayController.page = page
+
+    def set_pot1(self, reading:float) -> None:
+        if self.DisplayController.page[0:4] == "home":
+            self.DisplayController.throttle = reading
+        
+    def set_pot2(self, reading:float) -> None:
+        if self.DisplayController.page[0:4] == "home":
+            self.DisplayController.steer = reading
+
 
 # set up SSD-1306
 i2c = machine.I2C(0, sda=machine.Pin(12), scl=machine.Pin(13))
@@ -213,17 +163,9 @@ oled = ssd1306.SSD1306_I2C(128, 64, i2c)
 #r:reyax.RYLR998 = reyax.RYLR998(u)
 
 # show boot up
-dc = DisplayController(oled)
-dc.PageTracker.advance("home")
-dc.PageTracker.advance("info")
-dc.PageTracker.set_flag("bootup", "") # add bootup flag so it doesn't print "+back+"
-dc.display()
-dc.PageTracker.clear_flags()
-time.sleep(3)
-
-# go back to home for start.
-dc.PageTracker.retreat()
-dc.display()
+CONTROLLER:ControllerBrain = ControllerBrain(oled)
+CONTROLLER.goto("home")
+CONTROLLER.display()
 
 # set up potentiometers and buttons
 pot1 = machine.ADC(machine.Pin(26)) # left pot
@@ -234,6 +176,10 @@ button1 = machine.Pin(0, machine.Pin.IN, machine.Pin.PULL_UP) # left-most button
 button2 = machine.Pin(1, machine.Pin.IN, machine.Pin.PULL_UP) # middle button
 button3 = machine.Pin(2, machine.Pin.IN, machine.Pin.PULL_UP) # right-most button
 
+# tracking of button status on last loop
+button1_pressed_last:bool = False
+button2_pressed_last:bool = False
+button3_pressed_last:bool = False
 
 # infinite loop!
 while True:
@@ -249,12 +195,28 @@ while True:
     button2_pressed:bool = not button2.value()
     button3_pressed:bool = not button3.value()
 
-    print("Button status: " + str(button1_pressed) + ", " + str(button2_pressed) + ", " + str(button3_pressed))
+    # were the buttons just last let go from a push?
+    button1_invoked:bool = False
+    button2_invoked:bool = False
+    button3_invoked:bool = False
+    if button1_pressed == False and button1_pressed_last == True:
+        button1_invoked = True
+    if button2_pressed == False and button2_pressed_last == True:
+        button2_invoked = True
+    if button3_pressed == False and button3_pressed_last == True:
+        button3_invoked = True
 
     # set pot values on the throttle + steer
-    dc.throttle = pot1r
-    dc.steer = pot2r
+    CONTROLLER.set_pot1(pot1r)
+    CONTROLLER.set_pot2(pot2r)
+
+    # display
+    CONTROLLER.display()
+
+    # set button last pressed status
+    button1_pressed_last = button1_pressed
+    button2_pressed_last = button2_pressed
+    button3_pressed_last = button3_pressed
     
-    # display and wait
-    dc.display()
+    # wait (small delay)
     time.sleep_ms(10)
