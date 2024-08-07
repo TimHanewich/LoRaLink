@@ -2,6 +2,7 @@ import machine
 import ssd1306
 import time
 import WeightedAverageCalculator
+import reyax
 
 class DisplayController:
     def __init__(self, oled:ssd1306.SSD1306_I2C) -> None:
@@ -135,8 +136,11 @@ class DisplayController:
 
 class ControllerBrain:
 
-    def __init__(self, oled:ssd1306.SSD1306_I2C) -> None:
-        self.DisplayController:DisplayController = DisplayController(oled)
+    def __init__(self, oled:ssd1306.SSD1306_I2C, lora:reyax.RYLR998) -> None:
+        self.lora = lora
+
+        # set up DisplayController
+        self.DisplayController:DisplayController = DisplayController(oled)   
 
     def display(self) -> None:
         self.DisplayController.display()
@@ -146,6 +150,14 @@ class ControllerBrain:
         return self.DisplayController.page
 
     def goto(self, page:str) -> None:
+        if page== "config": # RYLR998 config, so need to update those params
+            self.DisplayController.lora_networkid = self.lora.networkid
+            self.DisplayController.lora_address = self.lora.address
+            self.DisplayController.lora_band = self.lora.band
+            self.DisplayController.lora_output_power = self.lora.output_power
+            self.DisplayController.lora_rfparams = self.lora.rf_parameters
+
+        # go to the page
         self.DisplayController.page = page
 
     def set_pot1(self, reading:float) -> None:
@@ -199,13 +211,15 @@ class ControllerBrain:
 i2c = machine.I2C(0, sda=machine.Pin(12), scl=machine.Pin(13))
 oled = ssd1306.SSD1306_I2C(128, 64, i2c)
 
-# set up REYAX RYLR998
-# import reyax
-#u = machine.UART(0, baudrate=115200, tx=machine.Pin(16), rx=machine.Pin(17))
-#r:reyax.RYLR998 = reyax.RYLR998(u)
+# set up RYLR998 LoRa module
+u = machine.UART(0, baudrate=115200, tx=machine.Pin(16), rx=machine.Pin(17))
+lora:reyax.RYLR998 = reyax.RYLR998(u)
+if lora.pulse == False:
+    print("RYLR998 LoRa module not properly connected!")
+    exit()
 
 # show boot up
-CONTROLLER:ControllerBrain = ControllerBrain(oled)
+CONTROLLER:ControllerBrain = ControllerBrain(oled, lora)
 CONTROLLER.goto("home.stats")
 CONTROLLER.display()
 
