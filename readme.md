@@ -1,0 +1,12 @@
+## Onboard Components
+- Control Components
+    - 1 SSD1306
+    - 3 push buttons: 16.5mm
+    - 2 B10K potentiometers: 7.5mm hole.    
+    - Power toggle switch: 21mm   
+- Raspberry Pi Pico
+- REYAX RYLR998
+- MT3608 boost converter
+- 18650 battery and holder
+- TP4056 charge controller, mounted with port accessible
+    - Enclosure? https://cults3d.com/en/3d-model/gadget/tp4056-enclosure
