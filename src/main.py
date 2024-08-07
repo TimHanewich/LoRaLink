@@ -17,6 +17,7 @@ oled.show()
 u = machine.UART(0, baudrate=115200, tx=machine.Pin(16), rx=machine.Pin(17))
 lora:reyax.RYLR998 = reyax.RYLR998(u)
 if lora.pulse == False:
+    oled.fill(0)
     oled.text("No LoRa!", 0, 0)
     oled.show()
     exit()
