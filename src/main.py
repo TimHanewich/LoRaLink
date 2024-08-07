@@ -11,11 +11,33 @@ oled.text("Loading...", 0, 0)
 oled.show()
 
 # set up RYLR998 LoRa module
-oled.fill(0)
-oled.text("LoRa...", 0, 0)
-oled.show()
 u = machine.UART(0, baudrate=115200, tx=machine.Pin(16), rx=machine.Pin(17))
 lora:reyax.RYLR998 = reyax.RYLR998(u)
+LoraConfirmed:bool = False
+LoraPulseAttempts:int = 0
+while LoraPulseAttempts < 10:
+    oled.fill(0)
+    oled.text("LoRa pulse", 0, 0)
+    oled.text(str(LoraPulseAttempts + 1), 0, 10)
+    oled.show()
+    time.sleep(1)
+
+    if lora.pulse == False:
+        LoraPulseAttempts = LoraPulseAttempts + 1
+    else:
+        LoraConfirmed = True
+        break
+if LoraConfirmed:
+    oled.fill(0)
+    oled.text("LoRa connected!", 0, 0)
+    oled.show()
+    time.sleep(1)
+else:
+    oled.fill(0)
+    oled.text("ERROR", 0, 0)
+    oled.text("LoRa not con!", 0, 12)
+    oled.show()
+    exit()
 if lora.pulse == False:
     oled.fill(0)
     oled.text("No LoRa!", 0, 0)
