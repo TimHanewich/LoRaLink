@@ -11,6 +11,9 @@ oled.text("Loading...", 0, 0)
 oled.show()
 
 # set up RYLR998 LoRa module
+oled.fill(0)
+oled.text("LoRa...", 0, 0)
+oled.show()
 u = machine.UART(0, baudrate=115200, tx=machine.Pin(16), rx=machine.Pin(17))
 lora:reyax.RYLR998 = reyax.RYLR998(u)
 if lora.pulse == False:
@@ -221,10 +224,16 @@ class ControllerBrain:
                 self.goto("home.stats")
 
 # Set up controller!
+oled.fill(0)
+oled.text("Boot...", 0, 0)
+oled.show()
 CONTROLLER:ControllerBrain = ControllerBrain(oled, lora)
 CONTROLLER.goto("home.stats") # start on home page
 
 # set up potentiometers and buttons
+oled.fill(0)
+oled.text("Controls...", 0, 0)
+oled.show()
 pot1 = machine.ADC(machine.Pin(26)) # left pot
 pot1_wac:WeightedAverageCalculator.WeightedAverageCalculator = WeightedAverageCalculator.WeightedAverageCalculator(0.75)
 pot2 = machine.ADC(machine.Pin(27)) # right pot
