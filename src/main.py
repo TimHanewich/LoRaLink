@@ -20,10 +20,10 @@ while LoraPulseAttempts < 10:
     oled.text("LoRa pulse", 0, 0)
     oled.text(str(LoraPulseAttempts + 1), 0, 10)
     oled.show()
-    time.sleep(1)
 
     if lora.pulse == False:
         LoraPulseAttempts = LoraPulseAttempts + 1
+        time.sleep(0.5)
     else:
         LoraConfirmed = True
         break
@@ -31,16 +31,11 @@ if LoraConfirmed:
     oled.fill(0)
     oled.text("LoRa connected!", 0, 0)
     oled.show()
-    time.sleep(1)
+    time.sleep(0.1)
 else:
     oled.fill(0)
     oled.text("ERROR", 0, 0)
     oled.text("LoRa not con!", 0, 12)
-    oled.show()
-    exit()
-if lora.pulse == False:
-    oled.fill(0)
-    oled.text("No LoRa!", 0, 0)
     oled.show()
     exit()
 
