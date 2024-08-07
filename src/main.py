@@ -4,6 +4,20 @@ import time
 import WeightedAverageCalculator
 import reyax
 
+# set up SSD-1306
+i2c = machine.I2C(0, sda=machine.Pin(12), scl=machine.Pin(13))
+oled = ssd1306.SSD1306_I2C(128, 64, i2c)
+oled.text("Loading...", 0, 0)
+oled.show()
+
+# set up RYLR998 LoRa module
+u = machine.UART(0, baudrate=115200, tx=machine.Pin(16), rx=machine.Pin(17))
+lora:reyax.RYLR998 = reyax.RYLR998(u)
+if lora.pulse == False:
+    oled.text("No LoRa!")
+    oled.show()
+    exit()
+
 class DisplayController:
     def __init__(self, oled:ssd1306.SSD1306_I2C) -> None:
         self._oled = oled
@@ -206,22 +220,9 @@ class ControllerBrain:
             else:
                 self.goto("home.stats")
 
-
-# set up SSD-1306
-i2c = machine.I2C(0, sda=machine.Pin(12), scl=machine.Pin(13))
-oled = ssd1306.SSD1306_I2C(128, 64, i2c)
-
-# set up RYLR998 LoRa module
-u = machine.UART(0, baudrate=115200, tx=machine.Pin(16), rx=machine.Pin(17))
-lora:reyax.RYLR998 = reyax.RYLR998(u)
-if lora.pulse == False:
-    print("RYLR998 LoRa module not properly connected!")
-    exit()
-
-# show boot up
+# Set up controller!
 CONTROLLER:ControllerBrain = ControllerBrain(oled, lora)
-CONTROLLER.goto("home.stats")
-CONTROLLER.display()
+CONTROLLER.goto("home.stats") # start on home page
 
 # set up potentiometers and buttons
 pot1 = machine.ADC(machine.Pin(26)) # left pot
