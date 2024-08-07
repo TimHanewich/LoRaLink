@@ -93,7 +93,7 @@ class DisplayController:
 
 
         
-        elif pos == "home.config":
+        elif pos == "config":
 
             # print params
             oled.text("N: " + str(self.lora_networkid), 0, 0)
@@ -105,7 +105,7 @@ class DisplayController:
             # print back button (selected)
             oled.text("+back+", 80, 56)
         
-        elif pos == "home.stats":
+        elif pos == "stats":
 
             mins:int = int(round(time.ticks_ms() / 60000, 0))
 
@@ -117,7 +117,7 @@ class DisplayController:
             # print back button (selected)
             oled.text("+back+", 80, 56)
 
-        elif pos == "home.info":
+        elif pos == "info":
             vtxt:str = "v. " + self.info_version
             vtxtpos:int = int(round((128 - (len(vtxt) * 8)) / 2, 0))
             oled.text(vtxt, vtxtpos, 0)
@@ -141,16 +141,58 @@ class ControllerBrain:
     def display(self) -> None:
         self.DisplayController.display()
 
+    @property
+    def page(self) -> str:
+        return self.DisplayController.page
+
     def goto(self, page:str) -> None:
         self.DisplayController.page = page
 
     def set_pot1(self, reading:float) -> None:
-        if self.DisplayController.page[0:4] == "home":
+        if self.page[0:4] == "home":
             self.DisplayController.throttle = reading
         
     def set_pot2(self, reading:float) -> None:
-        if self.DisplayController.page[0:4] == "home":
+        if self.page[0:4] == "home":
             self.DisplayController.steer = reading
+
+    def push_button1(self) -> None:
+        if self.page[0:4] == "home":
+            extension:str = self.page[5:]
+            if extension == "stats":
+                self.goto("home.info")
+            elif extension == "config":
+                self.goto("home.stats")
+            elif extension == "info":
+                self.goto("home.config")
+            else:
+                self.goto("home.stats")
+
+    def push_button2(self) -> None:
+        if self.page == "home.stats":
+            self.goto("stats")
+        elif self.page == "home.config":
+            self.goto("config")
+        elif self.page == "home.info":
+            self.goto("info")
+        elif self.page == "config":
+            self.goto("home.stats")
+        elif self.page == "stats":
+            self.goto("home.stats")
+        elif self.page == "info":
+            self.goto("home.stats")
+
+    def push_button3(self) -> None:
+        if self.page[0:4] == "home":
+            extension:str = self.page[5:]
+            if extension == "stats":
+                self.goto("home.config")
+            elif extension == "config":
+                self.goto("home.info")
+            elif extension == "info":
+                self.goto("home.stats")
+            else:
+                self.goto("home.stats")
 
 
 # set up SSD-1306
@@ -164,7 +206,7 @@ oled = ssd1306.SSD1306_I2C(128, 64, i2c)
 
 # show boot up
 CONTROLLER:ControllerBrain = ControllerBrain(oled)
-CONTROLLER.goto("home")
+CONTROLLER.goto("home.stats")
 CONTROLLER.display()
 
 # set up potentiometers and buttons
@@ -196,15 +238,14 @@ while True:
     button3_pressed:bool = not button3.value()
 
     # were the buttons just last let go from a push?
-    button1_invoked:bool = False
-    button2_invoked:bool = False
-    button3_invoked:bool = False
     if button1_pressed == False and button1_pressed_last == True:
-        button1_invoked = True
+        CONTROLLER.push_button1()
     if button2_pressed == False and button2_pressed_last == True:
-        button2_invoked = True
+        CONTROLLER.push_button2()
     if button3_pressed == False and button3_pressed_last == True:
-        button3_invoked = True
+        CONTROLLER.push_button3()
+
+
 
     # set pot values on the throttle + steer
     CONTROLLER.set_pot1(pot1r)
