@@ -260,7 +260,7 @@ while True:
     oled.show()
     
     # send pulse
-    lora.send(1, bincomms.pulse_call)
+    lora.send(1, bytes([bincomms.pulse_call]))
     time.sleep(1)
 
     # wait

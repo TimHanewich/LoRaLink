@@ -1,7 +1,7 @@
 import binary
 
-pulse_call = binary.bits_to_byte([True, False, False, False, False, False, False, False]) # Single-byte representation of a pulse call.
-pulse_echo = binary.bits_to_byte([True, True, False, False, False, False, False, False]) # Single-byte representation of a pulse echo.
+pulse_call:int = binary.bits_to_byte([True, False, False, False, False, False, False, False]) # Single-byte representation of a pulse call.
+pulse_echo:int = binary.bits_to_byte([True, True, False, False, False, False, False, False]) # Single-byte representation of a pulse echo.
 
 class OperationalCommand:
     def __init__(self) -> None:
