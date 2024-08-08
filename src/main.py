@@ -202,6 +202,9 @@ class ControllerBrain:
         # set up DisplayController
         self.DisplayController:DisplayController = DisplayController(oled)   
 
+        # set up last time sent
+        self.last_time_sent_ticks_ms:int = 0
+
     def display(self) -> None:
         self.DisplayController.display()
 
@@ -265,6 +268,41 @@ class ControllerBrain:
                 self.goto("home.stats")
             else:
                 self.goto("home.stats")
+
+    def tendto(self) -> None:
+
+        # send?
+        if self.page.startswith("home"): # are we on home?
+            if (time.ticks_ms() - self.last_time_sent_ticks_ms) >= 250: # is it time to send?
+                print("Time to send an update!")
+
+                # send the ControlCommand!
+                opcmd = bincomms.OperationalCommand()
+                opcmd.throttle = self.DisplayController.throttle
+                opcmd.steer = self.DisplayController.steer
+                self.lora.send(1, opcmd.encode())
+
+                # increment sent counter
+                self.DisplayController.stat_sent += 1
+
+                # mark last sent time
+                self.last_time_sent_ticks_ms = time.ticks_ms()
+        
+        # try to receive
+        rm:reyax.ReceivedMessage = lora.receive()
+        if rm != None:
+            self.DisplayController.stat_sent += 1 # increment # of messages received
+
+            if len(rm.data) == len(bincomms.OperationalResponse().encode()):
+                opresp = bincomms.OperationalResponse()
+                opresp.decode(rm.data)
+                self.DisplayController.drone_soc = opresp.battery
+                print("Drone battery status updated")
+            else:
+                print("Unknown message of length " + str(len(rm.data)) + " received. Ignoring.")
+
+
+
 
 # before proceeding, send out pulse check... wait until we hear confirmation from the rover that it hears us and is ready.
 pulse_attempt:int = 1
@@ -354,11 +392,12 @@ while True:
     if button3_pressed == False and button3_pressed_last == True:
         CONTROLLER.push_button3()
 
-
-
     # set pot values on the throttle + steer
     CONTROLLER.set_pot1(pot1r)
     CONTROLLER.set_pot2(pot2r)
+
+    # tend to - send/receive, do whatever you have to do
+    CONTROLLER.tendto()
 
     # display
     CONTROLLER.display()
