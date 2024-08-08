@@ -7,6 +7,9 @@ class OperationalCommand:
     def __init__(self) -> None:
         self.throttle:float = 0.0
         self.steer:float = 0.0
+
+    def __repr__(self) -> str:
+        return str({"throttle": self.throttle, "steer": self.steer})
     
     def encode(self) -> bytes:
         """Encodes the operational command into a series of two bytes."""
@@ -54,14 +57,51 @@ class OperationalCommand:
 
         return bytes([byte1, byte2])
 
+    def decode(self, bs:bytes) -> None:
+        """Decodes a two-byte sequence into a OperationalCommand."""
+
+        if len(bs) != 2:
+            raise Exception("Provided bytes are not a valid OperationalCommand! Length must be 2 bytes.")
+        
+        # decode
+        b1bits:list[bool] = binary.byte_to_bits(bs[0])
+        b2bits:list[bool] = binary.byte_to_bits(bs[1])
+
+        # check if the packet type identifier is correct (first two bytes)
+        if b1bits[0] == True or b1bits[1] == True:
+            raise Exception("Provided bytes are not an OperationalCommand! The packet type identifier did not match the OperationalCommand type.")
+        
+        # decode throttle
+        throttle:int = binary.bits_to_byte([False, False, b1bits[3], b1bits[4], b1bits[5], b1bits[6], b1bits[7], b2bits[0]]) # convert the 6-bits into a value (lead with two empties)
+        throttlef:float = throttle / 63 # convert back into float (percent) representation.
+        if b1bits[2] == False: # if the direction bit is set to False, this means it is a negative throttle, so multiply by 1
+            throttlef = throttlef * -1
+        self.throttle = throttlef
+
+        # decode steer
+        steer:int = binary.bits_to_byte([False, False, b2bits[2], b2bits[3], b2bits[4], b2bits[5], b2bits[6], b2bits[7]]) # convert the 6-bits into a value (lead with two empties)
+        steerf:float = steer / 63 # convert back into float (percent) representation.
+        if b2bits[1] == False: # if the direction bit is set to False, this means it is a negative throttle, so multiply by 1
+            steerf = steerf * -1
+        self.steer = steerf
 
 
 
+for x in range(-100, 100):
+    percent = x / 100
 
-opcmd = OperationalCommand()
-opcmd.throttle = 0.877
-opcmd.steer = -0.334
-print(opcmd.encode())
+    opcmd = OperationalCommand()
+    opcmd.throttle = percent
+    opcmd.steer = percent
+    bs = opcmd.encode()
+    print("For " + str(opcmd) + ": ")
+    print(bs)
+
+    opcmd2 = OperationalCommand()
+    opcmd2.decode(bs)
+    print("Decoded: " + str(opcmd2))
+    print("--------")
+    input()
 
 
 
