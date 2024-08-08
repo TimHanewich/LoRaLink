@@ -278,21 +278,25 @@ while True:
     
     # send pulse
     lora.send(1, bytes([bincomms.pulse_call]))
-    time.sleep(1)
+    time.sleep(0.2)
 
-    # wait
+    # Display listening msg
     oled.fill(0)
     oled.text("Attempt " + str(pulse_attempt), 0, 0)
     oled.text("Listening...", 0, 12)
     oled.show()
-    time.sleep(5)
 
-    # read msg?
-    rm:reyax.ReceivedMessage = lora.receive()
-    if rm == None:
-        pulse_attempt = pulse_attempt + 1
-    else:
-        if rm.data[0] == bincomms.pulse_echo: # if the data we received was an echo
+    # continuously read for messages
+    received_msg:reyax.ReceivedMessage = None
+    started_at:int = time.ticks_ms()
+    while (time.ticks_ms() - started_at) < 5000 and received_msg == None:
+        time.sleep(0.25)
+        received_msg = lora.receive()
+    
+    # was a message received?
+    if received_msg != None:
+        if received_msg.data[0] == bincomms.pulse_echo: # if the data we received was an echo
+            pulse_echoed = True
             break
         else:
             oled.fill(0)
@@ -300,6 +304,9 @@ while True:
             oled.text("But incorrect", 0, 12)
             oled.show()
             time.sleep(2)
+     
+    # increment
+    pulse_attempt = pulse_attempt + 1
 
 # set up potentiometers and buttons
 oled.fill(0)
