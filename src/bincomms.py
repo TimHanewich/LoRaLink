@@ -23,7 +23,6 @@ class OperationalCommand:
 
         # determine throttle bits
         throttleabs:float = abs(min(max(self.throttle, -1.0), 1.0))
-        print(throttleabs)
         throttleval:int = int(throttleabs * 63)
         throttlevalbits:list[bool] = binary.byte_to_bits(throttleval)
         throttle0:bool = throttlevalbits[2]
@@ -84,3 +83,35 @@ class OperationalCommand:
         if b2bits[1] == False: # if the direction bit is set to False, this means it is a negative throttle, so multiply by 1
             steerf = steerf * -1
         self.steer = steerf
+
+class OperationalResponse:
+    def __init__(self) -> None:
+        self.battery:float = 0.0 # battery level, expressed as a percentage
+
+    def __repr__(self) -> str:
+        return str({"battery": self.battery})
+
+    def encode(self) -> bytes:
+        bat:float = min(max(self.battery, 0.0), 1.0)
+        batint:int = int(bat * 63)
+        batbits:list[bool] = binary.byte_to_bits(batint)
+        byte:int = binary.bits_to_byte([True, True, batbits[2], batbits[3], batbits[4], batbits[5], batbits[6], batbits[7]])
+        return [byte]
+    
+    def decode(self, bs:bytes) -> None:
+
+        # check if length is correct
+        if len(bs) != 1:
+            raise Exception("Provided bytes of length " + str(len(bs)) + " is not a valid OperationalResponse. Length is not 1!")
+        
+        # convert
+        bits:list[bool] = binary.byte_to_bits(bs[0])
+        
+        # check that type is correct
+        if bits[0] != True or bits[1] != True:
+            raise Exception("Provided bytes are not an OperationalResponse! The packet type identifier did not match the OperationalResponse type.")
+        
+        # convert to percentage
+        batint:int = binary.bits_to_byte([False, False, bits[2], bits[3], bits[4], bits[5], bits[6], bits[7]])
+        batf:float = batint / 63
+        self.battery = batf
