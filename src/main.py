@@ -268,7 +268,7 @@ while True:
     oled.text("Attempt " + str(pulse_attempt), 0, 0)
     oled.text("Listening...", 0, 12)
     oled.show()
-    time.sleep(3)
+    time.sleep(5)
 
     # read msg?
     rm:reyax.ReceivedMessage = lora.receive()
