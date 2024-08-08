@@ -84,24 +84,3 @@ class OperationalCommand:
         if b2bits[1] == False: # if the direction bit is set to False, this means it is a negative throttle, so multiply by 1
             steerf = steerf * -1
         self.steer = steerf
-
-
-
-for x in range(-100, 100):
-    percent = x / 100
-
-    opcmd = OperationalCommand()
-    opcmd.throttle = percent
-    opcmd.steer = percent
-    bs = opcmd.encode()
-    print("For " + str(opcmd) + ": ")
-    print(bs)
-
-    opcmd2 = OperationalCommand()
-    opcmd2.decode(bs)
-    print("Decoded: " + str(opcmd2))
-    print("--------")
-    input()
-
-
-
