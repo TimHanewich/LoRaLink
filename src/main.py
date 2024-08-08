@@ -292,7 +292,7 @@ while True:
     if rm == None:
         pulse_attempt = pulse_attempt + 1
     else:
-        if rm.data == bincomms.pulse_echo: # if the data we received was an echo
+        if rm.data[0] == bincomms.pulse_echo: # if the data we received was an echo
             break
         else:
             oled.fill(0)
