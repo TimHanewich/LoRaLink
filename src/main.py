@@ -3,6 +3,7 @@ import ssd1306
 import time
 import WeightedAverageCalculator
 import reyax
+import bincomms
 
 # set up SSD-1306
 i2c = machine.I2C(0, sda=machine.Pin(12), scl=machine.Pin(13))
@@ -240,6 +241,41 @@ class ControllerBrain:
                 self.goto("home.stats")
             else:
                 self.goto("home.stats")
+
+# before proceeding, send out pulse check... wait until we hear confirmation from the rover that it hears us and is ready.
+pulse_attempt:int = 1
+while True:
+    
+    # print calling msg
+    oled.fill(0)
+    oled.text("Attempt " + str(pulse_attempt), 0, 0)
+    oled.text("Calling...", 0, 12)
+    oled.show()
+    
+    # send pulse
+    lora.send(1, bincomms.pulse_call)
+    time.sleep(1)
+
+    # wait
+    oled.fill(0)
+    oled.text("Attempt " + str(pulse_attempt), 0, 0)
+    oled.text("Listening...", 0, 12)
+    oled.show()
+    time.sleep(3)
+
+    # read msg?
+    rm:reyax.ReceivedMessage = lora.receive()
+    if rm == None:
+        pulse_attempt = pulse_attempt + 1
+    else:
+        if rm.data == bincomms.pulse_echo: # if the data we received was an echo
+            break
+        else:
+            oled.fill(0)
+            oled.text("Resp received", 0, 0)
+            oled.text("But incorrect", 0, 12)
+            oled.show()
+            time.sleep(2)
 
 # set up potentiometers and buttons
 oled.fill(0)
