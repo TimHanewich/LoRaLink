@@ -139,17 +139,17 @@ class DisplayController:
             self._oled.text("S", 50, 15)
 
             # throttle rectangle outline
-            self._oled.rect(60, 2, 68, 8, 1)
+            self._oled.rect(60, 2, 68, 8, 1) # X, Y, Width, Heigt, Color
 
             # steer rectangle outline
-            self._oled.rect(60, 15, 68, 8, 1)
+            self._oled.rect(60, 15, 68, 8, 1) # X, Y, Width, Heigt, Color
 
             # throttle fill bar
             tbf:int = int(round(68 * self.throttle, 0)) # throttle bar fill. 68 is the range of the bar (width)
             self._oled.rect(60, 2, tbf, 8, 1, True)
 
             # steer bar
-            steer_indicator_x:int = 60 + int(68 * self.steer) - 4
+            steer_indicator_x:int = 60 + int(60 * self.steer)
             self._oled.rect(steer_indicator_x, 15, 8, 8, 1, True)
 
 
