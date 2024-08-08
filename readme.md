@@ -28,8 +28,10 @@ Packet type - 2 bits
 
 ### Operational Command (control command send from controller to rover)
 Packet type - 2 bits
-Throttle - 7 bits
-Steer - 7 bits
+Throttle direction - 1 bit (0 = reverse, 1 = forward)
+Throttle - 6 bits
+Steer direction - 1 bit (0 = left, 1 = right)
+Steer - 6 bits
 
 ### Operational Response (periodic status update sent from the rover to the controller)
 Packet type - 2 bits
