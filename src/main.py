@@ -241,13 +241,6 @@ class ControllerBrain:
             else:
                 self.goto("home.stats")
 
-# Set up controller!
-oled.fill(0)
-oled.text("Boot...", 0, 0)
-oled.show()
-CONTROLLER:ControllerBrain = ControllerBrain(oled, lora)
-CONTROLLER.goto("home.stats") # start on home page
-
 # set up potentiometers and buttons
 oled.fill(0)
 oled.text("Controls...", 0, 0)
@@ -264,6 +257,13 @@ button3 = machine.Pin(2, machine.Pin.IN, machine.Pin.PULL_UP) # right-most butto
 button1_pressed_last:bool = False
 button2_pressed_last:bool = False
 button3_pressed_last:bool = False
+
+# Set up controller!
+oled.fill(0)
+oled.text("Boot...", 0, 0)
+oled.show()
+CONTROLLER:ControllerBrain = ControllerBrain(oled, lora)
+CONTROLLER.goto("home.stats") # start on home page
 
 # infinite loop!
 while True:
