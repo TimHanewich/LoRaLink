@@ -47,6 +47,20 @@ else:
     oled.show()
     exit()
 
+# configure RYLR998
+oled.fill(0)
+oled.text("Config LoRa...", 0, 0)
+oled.show()
+try:
+    lora.band = 960000000 # set band to highest (fastest)
+    lora.rf_parameters = (7, 9, 1, 8) # Spreadig Factor of 7, Bandwidth of 500 KHz, Coding Rate of 1, Programmed Preamble of 8
+except:
+    oled.fill(0)
+    oled.text("LoRa Config", 0, 0)
+    oled.text("Failed!", 0, 12)
+    oled.show()
+    exit()
+
 class DisplayController:
     def __init__(self, oled:ssd1306.SSD1306_I2C) -> None:
         self._oled = oled
