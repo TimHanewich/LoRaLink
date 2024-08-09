@@ -1,6 +1,7 @@
 import reyax
 import machine
 import time
+import bincomms
 
 u = machine.UART(0, tx=machine.Pin(16), rx=machine.Pin(17), baudrate=115200)
 lora = reyax.RYLR998(u)
@@ -24,7 +25,11 @@ while True:
             print("It is a pulse call!")
             print("Sending back pulse echo...")
             lora.send(rm.address, bytes([192]))
+        elif len(rm.data) == len(bincomms.OperationalCommand().encode()):
+            opcmd = bincomms.OperationalCommand()
+            opcmd.decode(rm.data)
+            print("It is an operational command: " + str(opcmd))
         else:
             print("But it wasn't a pulse call!")
 
-    time.sleep(2.5)
+    time.sleep_ms(100)
