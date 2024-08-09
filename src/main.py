@@ -4,6 +4,7 @@ import time
 import WeightedAverageCalculator
 import reyax
 import bincomms
+import framebuf
 
 # set up SSD-1306
 i2c = machine.I2C(0, sda=machine.Pin(12), scl=machine.Pin(13))
