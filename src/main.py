@@ -280,7 +280,9 @@ class ControllerBrain:
                 opcmd = bincomms.OperationalCommand()
                 opcmd.throttle = self.DisplayController.throttle
                 opcmd.steer = self.DisplayController.steer
-                self.lora.send(1, opcmd.encode())
+                to_send:bytes = opcmd.encode()
+                self.lora.send(1, to_send)
+                print("Just sent: " + str(to_send))
 
                 # increment sent counter
                 self.DisplayController.stat_sent += 1
