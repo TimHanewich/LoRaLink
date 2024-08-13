@@ -1,4 +1,4 @@
-# LoRaLink Remote Controller
+# LoRaLink RC Remote Controller
 A fully 3D-printed remote controller that uses Long Range (LoRa) radio communications to control an RC car.
 
 ## Onboard Components
@@ -12,6 +12,20 @@ LoRaLink has quite a few components that serve various functions, including cont
 - 1 [MT3608 Boost Converter](https://a.co/d/7Znw4Il)
 - 1 18650 Lithium-Ion battery
 - 1 [TP4056 Charge Controller](https://a.co/d/eq3EDgR)
+
+## Wiring
+The wiring diagram for the LoRaLink controller is included below. However, you can open [the schematic file](./schematic.drawio) on [draw.io](https://draw.io) as well (may be a bit easier to read).
+
+![wiring](https://i.imgur.com/a1LYTrq.png)
+
+## Assembly
+I've provided the STL files for this design that you can 3D-print yourself on Thingiverse [here](). Altogether, there are three parts you'll need to print:
+
+|Name|Description|Grams of PLA (20% infill)|
+|-|-|-|
+|bottom.stl|The "box" of the controller, that each electronic component will go into|40|
+|top.stl|The top plate of the controller that the power switch, SSD-1306, potentiometers, and buttons will be mounted to|12|
+|18650_frame.stl|A frame to hold the 18650 battery. Wrap wires around both ends to touch each terminal. Screw this into the bottom.stl|9|
 
 ## Communication Protocol
 I've designed a minimalistic, lightweight, robust communication protocol to allow communications between the LoRaLink controller and the device that it is being controller.
