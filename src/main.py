@@ -20,15 +20,23 @@ oled.text("Loading...", 0, 0)
 oled.show()
 
 # set up RYLR998 LoRa module
+oled.fill(0)
+ba_wifi = bytearray(b'\x00\x00\x00\x00\x00\x00\x00\x00?\x80\x00\x00?\xf8\x00\x00?\xfe\x00\x00?\xff\x80\x00?\xff\xe0\x00?\xff\xf0\x00\x00\x7f\xf8\x00\x00\x0f\xfc\x00\x00\x07\xfe\x000\x01\xff\x00?\x80\xff\x80?\xf0\x7f\xc0?\xf8?\xc0?\xfe\x1f\xe0?\xff\x0f\xe0\x07\xff\x87\xf0\x00\xff\x87\xf0\x00?\xc3\xf8\x00\x1f\xe3\xf8\x0f\x8f\xe1\xf8\x1f\xc7\xe1\xf8?\xc7\xf0\xfc?\xe3\xf0\xfc?\xe3\xf0\xfc?\xe3\xf0\xfc?\xe1\xf8\xfc\x1f\xc1\xf8\xfc\x0f\x81\xf8\xfc\x00\x00\x00\x00\x00\x00\x00\x00')
+fb_wifi = framebuf.FrameBuffer(ba_wifi, 32, 32, framebuf.MONO_HLSB)
+oled.blit(fb_wifi, 48, 0)
+oled.text("Pulsing LoRa", 16, 38)
 u = machine.UART(0, baudrate=115200, tx=machine.Pin(16), rx=machine.Pin(17))
 lora:reyax.RYLR998 = reyax.RYLR998(u)
 LoraConfirmed:bool = False
 LoraPulseAttempts:int = 0
 while LoraPulseAttempts < 10:
-    oled.fill(0)
-    oled.text("LoRa pulse", 0, 0)
-    oled.text(str(LoraPulseAttempts + 1), 0, 10)
-    oled.show()
+    
+    oled.rect(0, 50, 128, 14, 0, True) # clear out the attempt #
+
+    # print attempt #
+    attempt_number_text:str = "Attempt " + str(LoraPulseAttempts + 1)
+    attempt_number_pos_x:int = int((128 - (len(attempt_number_text) * 8)) / 2)
+    oled.text(attempt_number_text, attempt_number_pos_x, 50)
 
     if lora.pulse == False:
         LoraPulseAttempts = LoraPulseAttempts + 1
@@ -37,14 +45,13 @@ while LoraPulseAttempts < 10:
         LoraConfirmed = True
         break
 if LoraConfirmed:
-    oled.fill(0)
-    oled.text("LoRa connected!", 0, 0)
+    oled.rect(0, 50, 128, 14, 0, True) # clear out the attempt #
+    oled.text("LoRa connected!", 4, 50)
     oled.show()
-    time.sleep(0.1)
+    time.sleep(0.5)
 else:
-    oled.fill(0)
-    oled.text("ERROR", 0, 0)
-    oled.text("LoRa not con!", 0, 12)
+    oled.rect(0, 50, 128, 14, 0, True) # clear out the attempt #
+    oled.text("LoRa not con!", 12, 50)
     oled.show()
     exit()
 
