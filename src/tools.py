@@ -149,8 +149,9 @@ class ControllerBrain:
         # set up DisplayController
         self.DisplayController:DisplayController = DisplayController(oled)   
 
-        # set up last time sent
+        # set up last time sent and last time received
         self.last_time_sent_ticks_ms:int = 0
+        self.last_time_received_ticks_ms:int = 0
 
     def display(self) -> None:
         self.DisplayController.display()
@@ -244,5 +245,14 @@ class ControllerBrain:
                 opresp = bincomms.OperationalResponse()
                 opresp.decode(rm.data)
                 self.DisplayController.drone_soc = opresp.battery
+
+                # mark last time received as now
+                self.last_time_received_ticks_ms = time.ticks_ms()
             else:
                 print("Unknown message of length " + str(len(rm.data)) + " received. Ignoring.")
+
+        # if we havent received a message in a long time, turn on the "NO RESP" flag. If we have gotten one recently, turn off that flag!
+        if (time.ticks_ms() - self.last_time_received_ticks_ms) > 10000: # we havent received for 10 seconds
+            self.DisplayController.no_response = True
+        else:
+            self.DisplayController.no_response = False
