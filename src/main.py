@@ -20,11 +20,13 @@ oled = ssd1306.SSD1306_I2C(128, 64, i2c)
 oled.text("Loading...", 0, 0)
 oled.show()
 
+# set up ADC for reading internal battery level
+battery_adc = machine.ADC(machine.Pin(28))
+
 # HIJACK! BATTERY TESTING!
-# adc = machine.ADC(machine.Pin(28))
 # wac = WeightedAverageCalculator.WeightedAverageCalculator()
 # while True:
-#     reading:int = adc.read_u16()
+#     reading:int = battery_adc.read_u16()
 #     readingf:float = wac.feed(reading)
 #     oled.fill(0)
 #     oled.text(str(round(readingf, 0)), 0, 24)
@@ -159,7 +161,7 @@ button3_pressed_last:bool = False
 oled.fill(0)
 oled.text("Boot...", 0, 0)
 oled.show()
-CONTROLLER:ControllerBrain = ControllerBrain(oled, lora)
+CONTROLLER:ControllerBrain = ControllerBrain(oled, lora, battery_adc)
 CONTROLLER.goto("home.stats") # start on home page
 
 # infinite loop!
