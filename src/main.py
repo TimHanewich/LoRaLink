@@ -24,14 +24,25 @@ oled.show()
 battery_adc = machine.ADC(machine.Pin(28))
 
 # HIJACK! BATTERY TESTING!
-# wac = WeightedAverageCalculator.WeightedAverageCalculator()
-# while True:
-#     reading:int = battery_adc.read_u16()
-#     readingf:float = wac.feed(reading)
-#     oled.fill(0)
-#     oled.text(str(round(readingf, 0)), 0, 24)
-#     oled.show()
-#     time.sleep(0.25)
+import BatteryMonitor
+battery_monitor = BatteryMonitor.BatteryMonitor()
+battery_wac = WeightedAverageCalculator.WeightedAverageCalculator()
+while True:
+
+    # read and update battery level via ADC pin
+    vbat_reading:int = battery_adc.read_u16() # read raw
+    vbat_reading_smoothed:int = int(battery_wac.feed(float(vbat_reading))) # pass it through a weighted average filter (smooth it out)
+    voltage_at_pin:float = 3.01 + (((vbat_reading_smoothed - 38800) / (54000 - 38800)) * (4.21 - 3.01)) # calculate the voltage on the pin based upon a test of known values (tested reading at 4.2V and reading at 3.0V)
+    battery_voltage:float = voltage_at_pin / 0.680238095 # un-do the voltage divider
+    soc = battery_monitor.soc(battery_voltage)
+
+    oled.fill(0)
+    oled.text(str(int(round(vbat_reading, 0))), 0, 0)
+    oled.text(str(voltage_at_pin), 0, 10)
+    oled.text(str(battery_voltage), 0, 20)
+    oled.text(str(soc), 0, 30)
+    oled.show()
+    time.sleep(0.25)
 
 # Set up LoRa RYLR998 Module and pulse it to check that it is connected
 oled.fill(0)
