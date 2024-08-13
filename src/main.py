@@ -6,9 +6,10 @@ import reyax
 import bincomms
 import framebuf
 import tools
+import settings
 
 # set up SSD-1306
-i2c = machine.I2C(0, sda=machine.Pin(12), scl=machine.Pin(13))
+i2c = machine.I2C(settings.i2c_bus, sda=machine.Pin(settings.i2c_sda), scl=machine.Pin(settings.i2c_scl))
 if 60 not in i2c.scan():
     led = machine.Pin("LED", machine.Pin.OUT)
     while True:
@@ -21,7 +22,7 @@ oled.text("Loading...", 0, 0)
 oled.show()
 
 # set up ADC for reading internal battery level
-battery_adc = machine.ADC(machine.Pin(28))
+battery_adc = machine.ADC(machine.Pin(settings.battery_adc_gpio))
 
 # Set up LoRa RYLR998 Module and pulse it to check that it is connected
 oled.fill(0)
@@ -29,7 +30,7 @@ ba_wifi = bytearray(b'\x00\x00\x00\x00\x00\x00\x00\x00?\x80\x00\x00?\xf8\x00\x00
 fb_wifi = framebuf.FrameBuffer(ba_wifi, 32, 32, framebuf.MONO_HLSB)
 oled.blit(fb_wifi, 48, 0)
 oled.text("Pulsing LoRa", 16, 38)
-u = machine.UART(0, baudrate=115200, tx=machine.Pin(16), rx=machine.Pin(17))
+u = machine.UART(settings.uart_bus, baudrate=settings.uart_baudrate, tx=machine.Pin(settings.uart_tx), rx=machine.Pin(settings.uart_rx))
 lora:reyax.RYLR998 = reyax.RYLR998(u)
 LoraConfirmed:bool = False
 LoraPulseAttempts:int = 0
@@ -134,13 +135,13 @@ while True:
 oled.fill(0)
 oled.text("Controls...", 0, 0)
 oled.show()
-pot1 = machine.ADC(machine.Pin(26)) # left pot
+pot1 = machine.ADC(machine.Pin(settings.left_pot_adc_gpio)) # left pot
 pot1_wac:WeightedAverageCalculator.WeightedAverageCalculator = WeightedAverageCalculator.WeightedAverageCalculator(0.75)
-pot2 = machine.ADC(machine.Pin(27)) # right pot
+pot2 = machine.ADC(machine.Pin(settings.right_pot_adc_gpio)) # right pot
 pot2_wac:WeightedAverageCalculator.WeightedAverageCalculator = WeightedAverageCalculator.WeightedAverageCalculator(0.75)
-button1 = machine.Pin(0, machine.Pin.IN, machine.Pin.PULL_UP) # left-most button
-button2 = machine.Pin(1, machine.Pin.IN, machine.Pin.PULL_UP) # middle button
-button3 = machine.Pin(2, machine.Pin.IN, machine.Pin.PULL_UP) # right-most button
+button1 = machine.Pin(settings.left_button_gpio, machine.Pin.IN, machine.Pin.PULL_UP) # left-most button
+button2 = machine.Pin(settings.middle_button_gpio, machine.Pin.IN, machine.Pin.PULL_UP) # middle button
+button3 = machine.Pin(settings.right_button_gpio, machine.Pin.IN, machine.Pin.PULL_UP) # right-most button
 
 # tracking of button status on last loop
 button1_pressed_last:bool = False
