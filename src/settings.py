@@ -1,3 +1,6 @@
+# VERSION NUMBER
+VERSION:str = "0.1.0"
+
 # I2C settings (for the SSD-1306 OELD display)
 i2c_bus:int = 0
 i2c_sda:int = 12

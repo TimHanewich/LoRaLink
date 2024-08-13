@@ -5,6 +5,7 @@ import reyax
 import bincomms
 import WeightedAverageCalculator
 import BatteryMonitor
+import settings
 
 class DisplayController:
     def __init__(self, oled:ssd1306.SSD1306_I2C) -> None:
@@ -32,7 +33,7 @@ class DisplayController:
         self.stat_received:int = 0 # how many messages have been received so far.
 
         # for info page - info about version
-        self.info_version:str = "1.2.3"
+        self.info_version:str = settings.VERSION
 
     def display(self) -> None:
         """Displays current GUI 'position' on display."""
