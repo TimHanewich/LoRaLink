@@ -246,12 +246,3 @@ class ControllerBrain:
                 self.DisplayController.drone_soc = opresp.battery
             else:
                 print("Unknown message of length " + str(len(rm.data)) + " received. Ignoring.")
-
-i2c = machine.I2C(0, sda=machine.Pin(12), scl=machine.Pin(13))
-print(i2c.scan())
-oled = ssd1306.SSD1306_I2C(128, 64, i2c)
-
-dc = DisplayController(oled)
-dc.page = "home.info"
-dc.no_response = False
-dc.display()
