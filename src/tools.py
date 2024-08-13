@@ -267,6 +267,5 @@ class ControllerBrain:
         # read and update battery level via ADC pin
         vbat_reading:int = self.battery_adc.read_u16() # read raw
         vbat_reading_smoothed:int = int(self.battery_wac.feed(float(vbat_reading))) # pass it through a weighted average filter (smooth it out)
-        voltage_at_pin:float = 3.01 + (((vbat_reading_smoothed - 38800) / (54000 - 38800)) * (4.21 - 3.01)) # calculate the voltage on the pin based upon a test of known values (tested reading at 4.2V and reading at 3.0V)
-        battery_voltage:float = voltage_at_pin / 0.680238095 # un-do the voltage divider
-        self.DisplayController.controller_soc = self.battery_monitor.soc(battery_voltage)
+        battery_voltage:float = 3.01 + (((vbat_reading_smoothed - 38800) / (54000 - 38800)) * (4.21 - 3.01)) # calculate the voltage on the pin based upon a test of known values (tested reading at 4.2V and reading at 3.0V)
+        self.DisplayController.controller_soc = self.battery_monitor.soc(battery_voltage) # you may be wondering "Well don't you have to un-do the voltage divider?". Normally, yes, we do. But when I laid out the math and did the min/max formula, I was already taking that into account. So therefore, we dont have to here!
