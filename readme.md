@@ -36,3 +36,6 @@ Steer - 6 bits
 ### Operational Response (periodic status update sent from the rover to the controller)
 Packet type - 2 bits
 Battery level - 6 bits
+
+## Pivot Point Solutions
+![solutions](https://i.imgur.com/kKECvYp.png)
