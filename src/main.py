@@ -5,7 +5,7 @@ import WeightedAverageCalculator
 import reyax
 import bincomms
 import framebuf
-from tools import ControllerBrain
+import tools
 
 # set up SSD-1306
 i2c = machine.I2C(0, sda=machine.Pin(12), scl=machine.Pin(13))
@@ -161,7 +161,7 @@ button3_pressed_last:bool = False
 oled.fill(0)
 oled.text("Boot...", 0, 0)
 oled.show()
-CONTROLLER:ControllerBrain = ControllerBrain(oled, lora, battery_adc)
+CONTROLLER:tools.ControllerBrain = tools.ControllerBrain(oled, lora, battery_adc)
 CONTROLLER.goto("home.stats") # start on home page
 
 # infinite loop!
