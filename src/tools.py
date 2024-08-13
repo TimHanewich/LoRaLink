@@ -157,7 +157,7 @@ class ControllerBrain:
 
         # set up battery adc
         self.battery_adc = battery_adc
-        self.battery_wac:WeightedAverageCalculator.WeightedAverageCalculator = WeightedAverageCalculator.WeightedAverageCalculator(0.99)
+        self.battery_wac:WeightedAverageCalculator.WeightedAverageCalculator = WeightedAverageCalculator.WeightedAverageCalculator(0.98)
         self.battery_monitor:BatteryMonitor.BatteryMonitor = BatteryMonitor.BatteryMonitor(BatteryMonitor.PROFILE_18650)
 
     def display(self) -> None:
