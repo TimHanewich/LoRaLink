@@ -281,7 +281,6 @@ class ControllerBrain:
         # send?
         if self.page.startswith("home"): # are we on home?
             if (time.ticks_ms() - self.last_time_sent_ticks_ms) >= 250: # is it time to send?
-                print("Time to send an update!")
 
                 # send the ControlCommand!
                 opcmd = bincomms.OperationalCommand()
@@ -289,7 +288,6 @@ class ControllerBrain:
                 opcmd.steer = self.DisplayController.steer
                 to_send:bytes = opcmd.encode()
                 self.lora.send(1, to_send)
-                print("Just sent: " + str(to_send))
 
                 # increment sent counter
                 self.DisplayController.stat_sent += 1
