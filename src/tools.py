@@ -11,11 +11,12 @@ class DisplayController:
         # a unique identifier string establishing the setting or "screen status" that is currently being displayed
         self.page:str = "home"
 
-        # for home page - battery levels
+        # for home page - battery levels, throttle, steer, etc.
         self.controller_soc:float = 0.0 # controller battery state of charge, as a percentage
         self.drone_soc:float = 0.0 # controller battery state of charge, as a percentage
         self.throttle:float = 0.5 # throttle as percentage
         self.steer:float = 0.5 # steer as a percentage
+        self.no_response:bool = False # if flipped to true, means it has been a prolonged amount of time since we heard a packet returned from the drone
 
         # for RF config page - RYLR998 configuration
         self.lora_networkid:int = 18
@@ -70,6 +71,12 @@ class DisplayController:
             elif self.page == "home.info":
                 self._oled.text("+", 63, 56)
                 self._oled.text("+", 103, 56)
+
+            # no response
+            if self.no_response:
+                self._oled.rect(0, 46, 46, 18, 1, True)
+                self._oled.text("NO", 15, 48, 0)
+                self._oled.text("RESP", 7, 56, 0)
 
             # horizontal line separating menu options
             self._oled.line(46, 28, 128, 28, 1)
@@ -240,3 +247,11 @@ class ControllerBrain:
             else:
                 print("Unknown message of length " + str(len(rm.data)) + " received. Ignoring.")
 
+i2c = machine.I2C(0, sda=machine.Pin(12), scl=machine.Pin(13))
+print(i2c.scan())
+oled = ssd1306.SSD1306_I2C(128, 64, i2c)
+
+dc = DisplayController(oled)
+dc.page = "home.info"
+dc.no_response = False
+dc.display()
