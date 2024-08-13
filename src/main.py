@@ -147,7 +147,7 @@ oled.show()
 pot1 = machine.ADC(machine.Pin(26)) # left pot
 pot1_wac:WeightedAverageCalculator.WeightedAverageCalculator = WeightedAverageCalculator.WeightedAverageCalculator(0.75)
 pot2 = machine.ADC(machine.Pin(27)) # right pot
-pot2_wac = WeightedAverageCalculator.WeightedAverageCalculator = WeightedAverageCalculator.WeightedAverageCalculator(0.75)
+pot2_wac:WeightedAverageCalculator.WeightedAverageCalculator = WeightedAverageCalculator.WeightedAverageCalculator(0.75)
 button1 = machine.Pin(0, machine.Pin.IN, machine.Pin.PULL_UP) # left-most button
 button2 = machine.Pin(1, machine.Pin.IN, machine.Pin.PULL_UP) # middle button
 button3 = machine.Pin(2, machine.Pin.IN, machine.Pin.PULL_UP) # right-most button
