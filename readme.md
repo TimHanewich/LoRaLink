@@ -16,34 +16,40 @@ LoRaLink has quite a few components that serve various functions, including cont
 ## Communication Protocol
 I've designed a minimalistic, lightweight, robust communication protocol to allow communications between the LoRaLink controller and the device that it is being controller.
 
-The following communication protocol will be followed:
+All encoding/decoding of these packets into their binary representation is handled by the [bincomms.py](./src/bincomms.py) module, but I further describe the communication protocol below.
 
-### *Possible Packet Types*:
-- 0 - operational command (throttle/steer)
-- 1 - operational response (battery)
-- 2 - pulse call
-- 3 - pulse echo
+The LoRaLink controller and the device being controlled will use a pre-established protocol for communicating with each message being stored as a *packet*. There for **four** packet types:
+- Packet Type **0** = Operational Command
+- Packet Type **1** = Operational Response
+- Packet Type **2** = Pulse Call
+- Packet Type **3** = Pulse Echo
 
-### Pulse call (Controller sending an "are you there?" to the rover)
+These packets are further described below:
+
+### The "Pulse Call" Packet
+When the LoRaLink controller boots up, it first aims to establish communication with the controlled device via a "pulse" check. The LoRaLink controller sends out this packet to the device and then awaits a response, confirming the presence of the controlled device.
+
+The **Pulse Call** packet is only a single byte:
+
 ![pulse call](https://i.imgur.com/afdzPOR.png)
-Packet type - 2 bits
 
-### Pulse echo (rover responding "Yes, I am here. Ready to go." back to the controller in response)
+### The "Pulse Echo" Packet
+When the controlled device (likely an RC car) boots up, it continuously listens for the **Pulse Call** packet above. Once it receives it, it confirms its presence by responding with the **Pulse Echo** packet, only a single byte:
+
 ![pulse echo](https://i.imgur.com/DlVSA38.png)
-Packet type - 2 bits
 
-### Operational Command (control command send from controller to rover)
+### The "Operational Command" Packet
+Once communicatation is established via the Pulse Call/Echo packets above, The LoRaLink controller then begins continuously sending a stream of control commands to the controlled device using the **Operational Command** packet, consisting of two bytes, and described below:
+
 ![operational command](https://i.imgur.com/XDpZQ8i.png)
-Packet type - 2 bits
-Throttle direction - 1 bit (0 = reverse, 1 = forward)
-Throttle - 6 bits
-Steer direction - 1 bit (0 = left, 1 = right)
-Steer - 6 bits
 
-### Operational Response (periodic status update sent from the rover to the controller)
+A value of **1** in the *Throttle Direction* bit means the throttle is positive (forward) while a value of **0** means the throttle is negative (reversing). The same applies to the steering: **0** is a left turn, **1** is a right turn, for the *Steering Direction* bit.
+
+The throttle value and steering value are encoded as 6-bit values as seen above.
+
+### The "Operational Response" Packet
+Occasionally, during normal operation, the controlled device will send this packet back to the controller as a "I'm still alive" message, but also to inform it of its battery level (which will be displayed on the LoRaLink controller).
+
 ![operational response](https://i.imgur.com/ac1lFlh.png)
-Packet type - 2 bits
-Battery level - 6 bits
 
-## Pivot Point Solutions
-![solutions](https://i.imgur.com/kKECvYp.png)
+As seen above, the remaining 6 bits not used as a packet identifier are used to carry data about the battery. 
