@@ -4,6 +4,7 @@ import time
 import reyax
 import bincomms
 import WeightedAverageCalculator
+import BatteryMonitor
 
 class DisplayController:
     def __init__(self, oled:ssd1306.SSD1306_I2C) -> None:
@@ -157,6 +158,7 @@ class ControllerBrain:
         # set up battery adc
         self.battery_adc = battery_adc
         self.battery_wac:WeightedAverageCalculator.WeightedAverageCalculator = WeightedAverageCalculator.WeightedAverageCalculator()
+        self.battery_monitor:BatteryMonitor.BatteryMonitor = BatteryMonitor.BatteryMonitor(BatteryMonitor.PROFILE_18650)
 
     def display(self) -> None:
         self.DisplayController.display()
@@ -267,4 +269,4 @@ class ControllerBrain:
         vbat_reading_smoothed:int = int(self.battery_wac.feed(float(vbat_reading))) # pass it through a weighted average filter (smooth it out)
         voltage_at_pin:float = 3.01 + (((vbat_reading_smoothed - 38800) / (54000 - 38800)) * (4.21 - 3.01)) # calculate the voltage on the pin based upon a test of known values (tested reading at 4.2V and reading at 3.0V)
         battery_voltage:float = voltage_at_pin / 0.680238095 # un-do the voltage divider
-        self.DisplayController.controller_soc = battery_voltage
+        self.DisplayController.controller_soc = self.battery_monitor.soc(battery_voltage)
