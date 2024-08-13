@@ -263,6 +263,8 @@ class ControllerBrain:
             self.DisplayController.no_response = False
 
         # read and update battery level via ADC pin
-        vbat_reading:int = self.battery_adc.read_u16()
-        vbat_reading_smoothed:float = self.battery_wac.feed(float(vbat_reading))
-        
+        vbat_reading:int = self.battery_adc.read_u16() # read raw
+        vbat_reading_smoothed:int = int(self.battery_wac.feed(float(vbat_reading))) # pass it through a weighted average filter (smooth it out)
+        voltage_at_pin:float = 3.01 + (((vbat_reading_smoothed - 38800) / (54000 - 38800)) * (4.21 - 3.01)) # calculate the voltage on the pin based upon a test of known values (tested reading at 4.2V and reading at 3.0V)
+        battery_voltage:float = voltage_at_pin / 0.680238095 # un-do the voltage divider
+        self.DisplayController.controller_soc = battery_voltage
