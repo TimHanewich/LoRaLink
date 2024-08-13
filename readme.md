@@ -13,6 +13,14 @@ LoRaLink has quite a few components that serve various functions, including cont
 - 1 18650 Lithium-Ion battery
 - 1 [TP4056 Charge Controller](https://a.co/d/eq3EDgR)
 
+In addition to the components above, you'll also need:
+- 4 M2 screws (about 8 mm in length will work)
+- 1 long M2 screw (16-18mm?) for screwing in the 18650 battery holder to the bottom
+- Some 22-gauge wire (or whatever gauge you have/prefer)
+- A 47K Ohm resistor
+- A 100K Ohm resistor
+- A lot of solder!
+
 ## Wiring
 The wiring diagram for the LoRaLink controller is included below. However, you can open [the schematic file](./schematic.drawio) on [draw.io](https://draw.io) as well (may be a bit easier to read).
 
