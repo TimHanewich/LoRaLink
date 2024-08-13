@@ -19,7 +19,7 @@ oled = ssd1306.SSD1306_I2C(128, 64, i2c)
 oled.text("Loading...", 0, 0)
 oled.show()
 
-# set up RYLR998 LoRa module
+# Set up LoRa RYLR998 Module and pulse it to check that it is connected
 oled.fill(0)
 ba_wifi = bytearray(b'\x00\x00\x00\x00\x00\x00\x00\x00?\x80\x00\x00?\xf8\x00\x00?\xfe\x00\x00?\xff\x80\x00?\xff\xe0\x00?\xff\xf0\x00\x00\x7f\xf8\x00\x00\x0f\xfc\x00\x00\x07\xfe\x000\x01\xff\x00?\x80\xff\x80?\xf0\x7f\xc0?\xf8?\xc0?\xfe\x1f\xe0?\xff\x0f\xe0\x07\xff\x87\xf0\x00\xff\x87\xf0\x00?\xc3\xf8\x00\x1f\xe3\xf8\x0f\x8f\xe1\xf8\x1f\xc7\xe1\xf8?\xc7\xf0\xfc?\xe3\xf0\xfc?\xe3\xf0\xfc?\xe3\xf0\xfc?\xe1\xf8\xfc\x1f\xc1\xf8\xfc\x0f\x81\xf8\xfc\x00\x00\x00\x00\x00\x00\x00\x00')
 fb_wifi = framebuf.FrameBuffer(ba_wifi, 32, 32, framebuf.MONO_HLSB)
@@ -56,8 +56,8 @@ else:
     exit()
 
 # configure RYLR998
-oled.fill(0)
-oled.text("Config LoRa...", 0, 0)
+oled.rect(0, 38, 128, 26, 0, True) # clear out both the "Pulsing LoRa" line and the attempt # line
+oled.text("Configuring LoRa", 0, 38)
 oled.show()
 try:
     lora.networkid = 18
@@ -67,8 +67,7 @@ try:
     lora.rf_parameters = (7, 9, 1, 8) # Spreadig Factor of 7, Bandwidth of 500 KHz, Coding Rate of 1, Programmed Preamble of 8
 except:
     oled.fill(0)
-    oled.text("LoRa Config", 0, 0)
-    oled.text("Failed!", 0, 12)
+    oled.text("FAILED", 40, 50)
     oled.show()
     exit()
 
