@@ -96,7 +96,7 @@ class OperationalResponse:
         batint:int = int(bat * 63)
         batbits:list[bool] = binary.byte_to_bits(batint)
         byte:int = binary.bits_to_byte([True, True, batbits[2], batbits[3], batbits[4], batbits[5], batbits[6], batbits[7]])
-        return [byte]
+        return bytes([byte])
     
     def decode(self, bs:bytes) -> None:
 
