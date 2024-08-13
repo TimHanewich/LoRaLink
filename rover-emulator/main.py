@@ -38,7 +38,7 @@ while True:
             print("But it wasn't a pulse call!")
 
     # time to send out op status?
-    if (time.ticks_ms() - operational_status_last_sent) > 8000:
+    if (time.ticks_ms() - operational_status_last_sent) > 15000:
         battery:float = random.randint(0, 100) / 100
         opstatus:bincomms.OperationalResponse = bincomms.OperationalResponse()
         opstatus.battery = battery
