@@ -156,6 +156,7 @@ class ControllerBrain:
 
         # set up battery adc
         self.battery_adc = battery_adc
+        print("Type: " + str(type(WeightedAverageCalculator.WeightedAverageCalculator)))
         self.battery_wac:WeightedAverageCalculator.WeightedAverageCalculator = WeightedAverageCalculator.WeightedAverageCalculator()
 
     def display(self) -> None:
