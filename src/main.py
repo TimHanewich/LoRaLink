@@ -298,13 +298,12 @@ class ControllerBrain:
         # try to receive
         rm:reyax.ReceivedMessage = lora.receive()
         if rm != None:
-            self.DisplayController.stat_sent += 1 # increment # of messages received
+            self.DisplayController.stat_received += 1 # increment # of messages received
 
             if len(rm.data) == len(bincomms.OperationalResponse().encode()):
                 opresp = bincomms.OperationalResponse()
                 opresp.decode(rm.data)
                 self.DisplayController.drone_soc = opresp.battery
-                print("Drone battery status updated")
             else:
                 print("Unknown message of length " + str(len(rm.data)) + " received. Ignoring.")
 
