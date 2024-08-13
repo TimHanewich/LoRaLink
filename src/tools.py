@@ -3,6 +3,7 @@ import ssd1306
 import time
 import reyax
 import bincomms
+import WeightedAverageCalculator
 
 class DisplayController:
     def __init__(self, oled:ssd1306.SSD1306_I2C) -> None:
@@ -143,7 +144,7 @@ class DisplayController:
 
 class ControllerBrain:
 
-    def __init__(self, oled:ssd1306.SSD1306_I2C, lora:reyax.RYLR998) -> None:
+    def __init__(self, oled:ssd1306.SSD1306_I2C, lora:reyax.RYLR998, battery_adc:machine.ADC) -> None:
         self.lora = lora
 
         # set up DisplayController
@@ -152,6 +153,10 @@ class ControllerBrain:
         # set up last time sent and last time received
         self.last_time_sent_ticks_ms:int = 0
         self.last_time_received_ticks_ms:int = 0
+
+        # set up battery adc
+        self.battery_adc = battery_adc
+        self.battery_wac:WeightedAverageCalculator.WeightedAverageCalculator = WeightedAverageCalculator.WeightedAverageCalculator()
 
     def display(self) -> None:
         self.DisplayController.display()
@@ -256,3 +261,8 @@ class ControllerBrain:
             self.DisplayController.no_response = True
         else:
             self.DisplayController.no_response = False
+
+        # read and update battery level via ADC pin
+        vbat_reading:int = self.battery_adc.read_u16()
+        vbat_reading_smoothed:float = self.battery_wac.feed(float(vbat_reading))
+        
