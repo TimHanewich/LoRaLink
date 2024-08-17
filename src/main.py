@@ -99,7 +99,7 @@ if settings.neutralization:
         pot2r = pot2_wac.feed(pot2r) # pass pot2 reading through weighted average filter
 
         # if both are around the neutral position, move along
-        range_of_50percent:float = 0.02
+        range_of_50percent:float = 0.05
         range_min:float = 0.50 - range_of_50percent
         range_max:float = 0.50 + range_of_50percent
         if pot1r >= range_min and pot1r <= range_max and pot2r >= range_min and pot1r <= range_max:
@@ -112,16 +112,37 @@ if settings.neutralization:
         oled.text("neutralize", 24, 0)
         oled.text("inputs", 40, 12)
 
-        # set pot 1 values
-        #self._oled.text("pot1", 48, 24)
-        oled.text("pot1 set!", 28, 24)
-        oled.rect(0, 34, 128, 8, 1, False) # frame
-        oled.rect(61, 34, 6, 8, 1, False) # goal frame
+        # determine middle window widths
+        mid_windows_width:int = int((range_of_50percent * 128) * 2) # multiply it by two because it is on both sides... both to the right (positive) and left (negative)
+        mid_windows_x:int = 64 - int(mid_windows_width / 2)
 
-        # set pot 2 values
-        #self._oled.text("pot2", 48, 46)
-        oled.text("pot2 set!", 28, 46)
-        oled.rect(0, 56, 128, 8, 1, False)
+        # set pot 1 frame
+        oled.rect(0, 34, 128, 8, 1, False) # frame
+        oled.rect(mid_windows_x, 34, mid_windows_width, 8, 1, False) # goal frame
+
+        # set pot 1 position
+        pot1_x:int = 1 + int(pot1r * 123)
+        oled.rect(pot1_x, 34, 3, 8, 1, True)
+
+        # set pot 1 text
+        if pot1r >= range_min and pot1r <= range_max:
+            oled.text("pot1 neutral!", 12, 24)
+        else:
+            oled.text("pot1", 48, 24)
+
+        # set pot 2 frame
+        oled.rect(0, 56, 128, 8, 1, False) # frame
+        oled.rect(mid_windows_x, 56, mid_windows_width, 8, 1, False) # goal frame
+
+        # set pot 2 position
+        pot2_x:int = 1 + int(pot2r * 123)
+        oled.rect(pot2_x, 56, 3, 8, 1, True)
+
+        # set pot 2 text
+        if pot2r >= range_min and pot2r <= range_max:
+            oled.text("pot2 neutral!", 12, 46)
+        else:
+            oled.text("pot2", 48, 46)
 
         # show display!
         oled.show()
