@@ -95,15 +95,17 @@ class DisplayController:
             self._oled.rect(60, 15, 68, 8, 1) # X, Y, Width, Heigt, Color
 
             # throttle fill bar
-            tbf:int = int(round(68 * self.throttle, 0)) # throttle bar fill. 68 is the range of the bar (width)
-            self._oled.rect(60, 2, tbf, 8, 1, True)
+            throttle_bar_width:int = int(abs(self.throttle) * 34) # 34 is half of the overall bar (full in either direction)
+            if self.throttle >= 0.0:
+                self._oled.rect(94, 2, throttle_bar_width, 8, 1, True) # if the throttle is positive, fill to the right starting @ the mid way point (94)
+            else:
+                self._oled.rect(94 - throttle_bar_width, 2, throttle_bar_width, 8, 1, True) # if the throttle is negative, fill to the left
 
             # steer bar
-            steer_indicator_x:int = 60 + int(60 * self.steer)
+            steer_positive:float = (self.steer / 2) + 0.5 # purely for the sake of displaying the steer bar, we are converting the steer value (which can be between -1.0 and 1.0) to a value between 0.0 and 1.0, scaling appropriately. We do this because it is easier just to work with the 0.0 to 1.0 when displaying it here.
+            steer_indicator_x:int = 60 + int(60 * steer_positive)
             self._oled.rect(steer_indicator_x, 15, 8, 8, 1, True)
 
-
-        
         elif pos == "config":
 
             # print params
