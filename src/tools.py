@@ -40,9 +40,8 @@ class DisplayController:
 
         # preliminary
         self._oled.fill(0)
-        pos:str = self.page
 
-        if pos[0:4] == "home":
+        if self.page.startswith("home"):
 
             # determine state of charge display value and ensure each are at least 3 characters
             controller_soc_value_display:str = str(int(round(min(max(self.controller_soc, 0.0), 0.99) * 100, 0))) + "%"
@@ -106,7 +105,7 @@ class DisplayController:
             steer_indicator_x:int = 60 + int(60 * steer_positive)
             self._oled.rect(steer_indicator_x, 15, 8, 8, 1, True)
 
-        elif pos == "config":
+        elif self.page.startswith("config"):
 
             # print params
             self._oled.text("N: " + str(self.lora_networkid), 0, 0)
@@ -118,7 +117,7 @@ class DisplayController:
             # print back button (selected)
             self._oled.text("+back+", 80, 56)
         
-        elif pos == "stats":
+        elif self.page.startswith("stats"):
 
             mins:int = int(round(time.ticks_ms() / 60000, 0))
 
@@ -130,7 +129,7 @@ class DisplayController:
             # print back button (selected)
             self._oled.text("+back+", 80, 56)
 
-        elif pos == "info":
+        elif self.page.startswith("info"):
             vtxt:str = "v. " + self.info_version
             vtxtpos:int = int(round((128 - (len(vtxt) * 8)) / 2, 0))
             self._oled.text(vtxt, vtxtpos, 0)
