@@ -164,6 +164,10 @@ class ControllerBrain:
     def __init__(self, oled:ssd1306.SSD1306_I2C, lora:reyax.RYLR998, battery_adc:machine.ADC) -> None:
         self.lora = lora
 
+        # general input values that can be used by any page or any function
+        self.pot1:float = None # a value between 0.0 and 1.0 representing the left potentiometer position (fully turned to left is 0.0, fully turned to right is 1.0)
+        self.pot2:float = None # a value between 0.0 and 1.0 representing the right potentiometer position (fully turned to left is 0.0, fully turned to right is 1.0)
+
         # set up DisplayController
         self.DisplayController:DisplayController = DisplayController(oled)   
 
@@ -177,6 +181,8 @@ class ControllerBrain:
         self.battery_monitor:BatteryMonitor.BatteryMonitor = BatteryMonitor.BatteryMonitor(BatteryMonitor.PROFILE_18650)
 
     def display(self) -> None:
+        self.DisplayController.throttle = (self.pot1 - 0.5) * 2 # convert the value that is between 0.0 and 1.0 to a value between -1.0 and 1.0
+        self.DisplayController.steer = (self.pot2 - 0.5) * 2 # convert the value that is between 0.0 and 1.0 to a value between -1.0 and 1.0
         self.DisplayController.display()
 
     @property
@@ -195,12 +201,10 @@ class ControllerBrain:
         self.DisplayController.page = page
 
     def set_pot1(self, reading:float) -> None:
-        if self.page.startswith("home") or self.page.startswith("neutralization"):
-            self.DisplayController.throttle = (reading - 0.5) * 2 # convert the value that is between 0.0 and 1.0 to a value between -1.0 and 1.0
+        self.pot1 = reading
         
     def set_pot2(self, reading:float) -> None:
-        if self.page.startswith("home") or self.page.startswith("neutralization"):
-            self.DisplayController.steer = (reading - 0.5) * 2 # convert the value that is between 0.0 and 1.0 to a value between -1.0 and 1.0
+        self.pot2 = reading
 
     def push_button1(self) -> None:
         if self.page.startswith("home"):
