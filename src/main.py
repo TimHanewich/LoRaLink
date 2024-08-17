@@ -88,9 +88,6 @@ button1 = machine.Pin(settings.left_button_gpio, machine.Pin.IN, machine.Pin.PUL
 button2 = machine.Pin(settings.middle_button_gpio, machine.Pin.IN, machine.Pin.PULL_UP) # middle button
 button3 = machine.Pin(settings.right_button_gpio, machine.Pin.IN, machine.Pin.PULL_UP) # right-most button
 
-# Now that we have the SSD-1306, LoRa, and battery ADC set up, set up controller brain!
-CONTROLLER:tools.ControllerBrain = tools.ControllerBrain(oled, lora, battery_adc)
-
 # neutralization?
 if settings.neutralization:
     while True:
@@ -108,6 +105,9 @@ if settings.neutralization:
         if pot1r >= range_min and pot1r <= range_max and pot2r >= range_min and pot1r <= range_max:
             break
 
+        # clear display
+        oled.fill(0)
+
         # display
         oled.text("neutralize", 24, 0)
         oled.text("inputs", 40, 12)
@@ -122,6 +122,9 @@ if settings.neutralization:
         #self._oled.text("pot2", 48, 46)
         oled.text("pot2 set!", 28, 46)
         oled.rect(0, 56, 128, 8, 1, False)
+
+        # show display!
+        oled.show()
 
         # small delay
         time.sleep_ms(10)
@@ -190,6 +193,8 @@ button1_pressed_last:bool = False
 button2_pressed_last:bool = False
 button3_pressed_last:bool = False
 
+# Now that we have the SSD-1306, LoRa, and battery ADC set up, set up controller brain!
+CONTROLLER:tools.ControllerBrain = tools.ControllerBrain(oled, lora, battery_adc)
 
 # infinite loop!
 CONTROLLER.goto("home.stats") # start on home page
