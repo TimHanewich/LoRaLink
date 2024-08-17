@@ -143,10 +143,12 @@ class DisplayController:
             self._oled.text("neutralize", 24, 0)
             self._oled.text("inputs", 40, 12)
 
+            # set pot 1 values
             #self._oled.text("pot1", 48, 24)
             self._oled.text("pot1 set!", 28, 24)
             self._oled.rect(0, 34, 128, 8, 1, False)
 
+            # set pot 2 values
             #self._oled.text("pot2", 48, 46)
             self._oled.text("pot2 set!", 28, 46)
             self._oled.rect(0, 56, 128, 8, 1, False)
@@ -193,11 +195,11 @@ class ControllerBrain:
         self.DisplayController.page = page
 
     def set_pot1(self, reading:float) -> None:
-        if self.page.startswith("home"):
+        if self.page.startswith("home") or self.page.startswith("neutralization"):
             self.DisplayController.throttle = (reading - 0.5) * 2 # convert the value that is between 0.0 and 1.0 to a value between -1.0 and 1.0
         
     def set_pot2(self, reading:float) -> None:
-        if self.page.startswith("home"):
+        if self.page.startswith("home") or self.page.startswith("neutralization"):
             self.DisplayController.steer = (reading - 0.5) * 2 # convert the value that is between 0.0 and 1.0 to a value between -1.0 and 1.0
 
     def push_button1(self) -> None:
