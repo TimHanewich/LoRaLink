@@ -77,59 +77,60 @@ except:
     exit()
 
 # before proceeding, send out comms initiation to the rover... wait until we hear confirmation from the rover that it hears us and is ready.
-ba_controller:bytearray = bytearray(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\xf0\x0f\xe0\x0f\xff\xff\xf0\x1f\x7f\xff\xf8\x1c\x07\xe0<9\xc0\x03\x1c;\xe0\x07\x9cw\xf0\x07\x8e\x7fx\x1f\xeeo8<\xf7\xefx<\xf7\xefx\x1f\xe7\xe7\xf0\x07\x87\xc3\xe0\x07\x83\xc1\xc0\x03\x03\xc0\x1f\xf8\x03\xc0\x7f\xfe\x03\xc0\xfc?\x03\xc1\xe0\x07\x83\xc7\xc0\x03\xc3\xff\x80\x01\xff\xfe\x00\x00\x7f|\x00\x00>\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
-ba_car:bytearray = bytearray(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x0f\xf0\x00\x00\xff\xff\x00\x03\xff\xff\xc0\x07\xff\xff\xe0\x07\xc0\x03\xe0\x0f\x00\x00\xf0\x0f\x00\x00\xf0\xfe\x00\x00\x7f\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x7f\xff\xff\xfe\xfc\xff\xff?\xf8\x7f\xfe\x1f\xf8\x7f\xfe\x1f|\xff\xff>\x7f\xff\xff\xfe\x7f\xff\xff\xfe?\xff\xff\xfc?\xff\xff\xfc?\x00\x00\xfc?\x00\x00\xfc\x1f\x00\x00\xf8\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
-fb_controller = framebuf.FrameBuffer(ba_controller, 32, 32, framebuf.MONO_HLSB)
-fb_car = framebuf.FrameBuffer(ba_car, 32, 32, framebuf.MONO_HLSB)
-oled.fill(0)
-oled.text("connecting", 24, 0)
-oled.blit(fb_controller, 6, 10) # controller
-oled.blit(fb_car, 90, 10) # car
-oled.hline(42, 26, 44, 1) # horizontal line
-pulse_attempt:int = 1
-while True:
+if settings.handshake:
+    ba_controller:bytearray = bytearray(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\xf0\x0f\xe0\x0f\xff\xff\xf0\x1f\x7f\xff\xf8\x1c\x07\xe0<9\xc0\x03\x1c;\xe0\x07\x9cw\xf0\x07\x8e\x7fx\x1f\xeeo8<\xf7\xefx<\xf7\xefx\x1f\xe7\xe7\xf0\x07\x87\xc3\xe0\x07\x83\xc1\xc0\x03\x03\xc0\x1f\xf8\x03\xc0\x7f\xfe\x03\xc0\xfc?\x03\xc1\xe0\x07\x83\xc7\xc0\x03\xc3\xff\x80\x01\xff\xfe\x00\x00\x7f|\x00\x00>\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+    ba_car:bytearray = bytearray(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x0f\xf0\x00\x00\xff\xff\x00\x03\xff\xff\xc0\x07\xff\xff\xe0\x07\xc0\x03\xe0\x0f\x00\x00\xf0\x0f\x00\x00\xf0\xfe\x00\x00\x7f\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x7f\xff\xff\xfe\xfc\xff\xff?\xf8\x7f\xfe\x1f\xf8\x7f\xfe\x1f|\xff\xff>\x7f\xff\xff\xfe\x7f\xff\xff\xfe?\xff\xff\xfc?\xff\xff\xfc?\x00\x00\xfc?\x00\x00\xfc\x1f\x00\x00\xf8\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+    fb_controller = framebuf.FrameBuffer(ba_controller, 32, 32, framebuf.MONO_HLSB)
+    fb_car = framebuf.FrameBuffer(ba_car, 32, 32, framebuf.MONO_HLSB)
+    oled.fill(0)
+    oled.text("connecting", 24, 0)
+    oled.blit(fb_controller, 6, 10) # controller
+    oled.blit(fb_car, 90, 10) # car
+    oled.hline(42, 26, 44, 1) # horizontal line
+    pulse_attempt:int = 1
+    while True:
 
-    oled.rect(0, 44, 128, 20, 0, True) # delete the status portion of the screen (Attempt #, listening/calling)
-    
-    # print attempt #
-    attempt_number_text:str = "Attempt " + str(pulse_attempt)
-    attempt_number_pos_x:int = int((128 - (len(attempt_number_text) * 8)) / 2)
-    oled.text(attempt_number_text, attempt_number_pos_x, 44)
+        oled.rect(0, 44, 128, 20, 0, True) # delete the status portion of the screen (Attempt #, listening/calling)
+        
+        # print attempt #
+        attempt_number_text:str = "Attempt " + str(pulse_attempt)
+        attempt_number_pos_x:int = int((128 - (len(attempt_number_text) * 8)) / 2)
+        oled.text(attempt_number_text, attempt_number_pos_x, 44)
 
-    # print calling
-    oled.text("calling", 36, 56)
-    oled.show()
-    
-    # send pulse
-    lora.send(1, bytes([bincomms.pulse_call]))
-    time.sleep(0.2)
+        # print calling
+        oled.text("calling", 36, 56)
+        oled.show()
+        
+        # send pulse
+        lora.send(1, bytes([bincomms.pulse_call]))
+        time.sleep(0.2)
 
-    # print listening
-    oled.rect(0, 56, 128, 8, 0, True) # clear out the "calling" on the bottom
-    oled.text("listening", 28, 56)
-    oled.show()
+        # print listening
+        oled.rect(0, 56, 128, 8, 0, True) # clear out the "calling" on the bottom
+        oled.text("listening", 28, 56)
+        oled.show()
 
-    # continuously read for messages
-    received_msg:reyax.ReceivedMessage = None
-    started_at:int = time.ticks_ms()
-    while (time.ticks_ms() - started_at) < 5000 and received_msg == None:
-        time.sleep(0.25)
-        received_msg = lora.receive()
-    
-    # was a message received?
-    if received_msg != None:
-        if received_msg.data[0] == bincomms.pulse_echo: # if the data we received was an echo
-            pulse_echoed = True
-            break
-        else:
-            oled.fill(0)
-            oled.text("Resp received", 0, 0)
-            oled.text("But incorrect", 0, 12)
-            oled.show()
-            time.sleep(2)
-     
-    # increment
-    pulse_attempt = pulse_attempt + 1
+        # continuously read for messages
+        received_msg:reyax.ReceivedMessage = None
+        started_at:int = time.ticks_ms()
+        while (time.ticks_ms() - started_at) < 5000 and received_msg == None:
+            time.sleep(0.25)
+            received_msg = lora.receive()
+        
+        # was a message received?
+        if received_msg != None:
+            if received_msg.data[0] == bincomms.pulse_echo: # if the data we received was an echo
+                pulse_echoed = True
+                break
+            else:
+                oled.fill(0)
+                oled.text("Resp received", 0, 0)
+                oled.text("But incorrect", 0, 12)
+                oled.show()
+                time.sleep(2)
+        
+        # increment
+        pulse_attempt = pulse_attempt + 1
 
 # set up potentiometers and buttons
 oled.fill(0)
