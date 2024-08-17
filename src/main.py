@@ -76,6 +76,50 @@ except:
     oled.show()
     exit()
 
+# set up potentiometers and buttons
+oled.fill(0)
+oled.text("Controls...", 0, 0)
+oled.show()
+pot1 = machine.ADC(machine.Pin(settings.left_pot_adc_gpio)) # left pot
+pot1_wac:WeightedAverageCalculator.WeightedAverageCalculator = WeightedAverageCalculator.WeightedAverageCalculator(0.75)
+pot2 = machine.ADC(machine.Pin(settings.right_pot_adc_gpio)) # right pot
+pot2_wac:WeightedAverageCalculator.WeightedAverageCalculator = WeightedAverageCalculator.WeightedAverageCalculator(0.75)
+button1 = machine.Pin(settings.left_button_gpio, machine.Pin.IN, machine.Pin.PULL_UP) # left-most button
+button2 = machine.Pin(settings.middle_button_gpio, machine.Pin.IN, machine.Pin.PULL_UP) # middle button
+button3 = machine.Pin(settings.right_button_gpio, machine.Pin.IN, machine.Pin.PULL_UP) # right-most button
+
+# Now that we have the SSD-1306, LoRa, and battery ADC set up, set up controller brain!
+CONTROLLER:tools.ControllerBrain = tools.ControllerBrain(oled, lora, battery_adc)
+
+# neutralization?
+if settings.neutralization:
+    CONTROLLER.goto("neutralization")
+    while True:
+
+        # get reading of pots
+        pot1r:float = (65535 - pot1.read_u16()) / 65535 # get reading of pot1 as a percentage
+        pot2r:float = (65535 - pot2.read_u16()) / 65535 # get reading of pot2 as a percentage
+        pot1r = pot1_wac.feed(pot1r) # pass pot1 reading through weighted average filter
+        pot2r = pot2_wac.feed(pot2r) # pass pot2 reading through weighted average filter
+
+        # set position in the controller so the display will update
+        CONTROLLER.set_pot1(pot1r)
+        CONTROLLER.set_pot2(pot2r)
+
+        # if both are around the neutral position, move along
+        range_of_50percent:float = 0.02
+        range_min:float = 0.50 - range_of_50percent
+        range_max:float = 0.50 + range_of_50percent
+        if pot1r >= range_min and pot1r <= range_max and pot2r >= range_min and pot1r <= range_max:
+            break
+
+        # display
+        CONTROLLER.display()
+
+        # small delay
+        time.sleep_ms(10)
+
+
 # before proceeding, send out comms initiation to the rover... wait until we hear confirmation from the rover that it hears us and is ready.
 if settings.handshake:
     ba_controller:bytearray = bytearray(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03\xf0\x0f\xe0\x0f\xff\xff\xf0\x1f\x7f\xff\xf8\x1c\x07\xe0<9\xc0\x03\x1c;\xe0\x07\x9cw\xf0\x07\x8e\x7fx\x1f\xeeo8<\xf7\xefx<\xf7\xefx\x1f\xe7\xe7\xf0\x07\x87\xc3\xe0\x07\x83\xc1\xc0\x03\x03\xc0\x1f\xf8\x03\xc0\x7f\xfe\x03\xc0\xfc?\x03\xc1\xe0\x07\x83\xc7\xc0\x03\xc3\xff\x80\x01\xff\xfe\x00\x00\x7f|\x00\x00>\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
@@ -132,31 +176,16 @@ if settings.handshake:
         # increment
         pulse_attempt = pulse_attempt + 1
 
-# set up potentiometers and buttons
-oled.fill(0)
-oled.text("Controls...", 0, 0)
-oled.show()
-pot1 = machine.ADC(machine.Pin(settings.left_pot_adc_gpio)) # left pot
-pot1_wac:WeightedAverageCalculator.WeightedAverageCalculator = WeightedAverageCalculator.WeightedAverageCalculator(0.75)
-pot2 = machine.ADC(machine.Pin(settings.right_pot_adc_gpio)) # right pot
-pot2_wac:WeightedAverageCalculator.WeightedAverageCalculator = WeightedAverageCalculator.WeightedAverageCalculator(0.75)
-button1 = machine.Pin(settings.left_button_gpio, machine.Pin.IN, machine.Pin.PULL_UP) # left-most button
-button2 = machine.Pin(settings.middle_button_gpio, machine.Pin.IN, machine.Pin.PULL_UP) # middle button
-button3 = machine.Pin(settings.right_button_gpio, machine.Pin.IN, machine.Pin.PULL_UP) # right-most button
+
 
 # tracking of button status on last loop
 button1_pressed_last:bool = False
 button2_pressed_last:bool = False
 button3_pressed_last:bool = False
 
-# Set up controller!
-oled.fill(0)
-oled.text("Boot...", 0, 0)
-oled.show()
-CONTROLLER:tools.ControllerBrain = tools.ControllerBrain(oled, lora, battery_adc)
-CONTROLLER.goto("home.stats") # start on home page
 
 # infinite loop!
+CONTROLLER.goto("home.stats") # start on home page
 while True:
 
     # get reading of pots
