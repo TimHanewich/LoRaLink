@@ -75,3 +75,6 @@ Occasionally, during normal operation, the controlled device will send this pack
 ![operational response](https://i.imgur.com/ac1lFlh.png)
 
 As seen above, the remaining 6 bits not used as a packet identifier are used to carry data about the battery. 
+
+## Other Misc. Resources
+- The PowerPoint deck I used to create the visuals above that depict the binary communication protocol can be downloaded [here](https://github.com/TimHanewich/LoRaLink/releases/download/1/comm_protocol.pptx).
