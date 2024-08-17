@@ -22,5 +22,6 @@ uart_baudrate:int = 115200
 uart_tx:int = 16
 uart_rx:int = 17
 
-# Establish digital "handshake" with rover before proceeding to transmit data packets (normal operatiation)
-handshake:bool = True
+# boot up options
+handshake:bool = False # Establish digital "handshake" with rover before proceeding to transmit data packets (normal operatiation)
+neutralization:bool = True # neutralize inputs for safety before proceeding to send out control commands (make user put knobs in neutral position for safety purposes)

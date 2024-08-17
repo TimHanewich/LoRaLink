@@ -287,24 +287,24 @@ class ControllerBrain:
         self.DisplayController.controller_soc = self.battery_monitor.soc(battery_voltage) # you may be wondering "Well don't you have to un-do the voltage divider?". Normally, yes, we do. But when I laid out the math and did the min/max formula, I was already taking that into account. So therefore, we dont have to here!
 
 
-import machine
-import ssd1306
-import time
-import WeightedAverageCalculator
-import reyax
-import bincomms
-import settings
+# import machine
+# import ssd1306
+# import time
+# import WeightedAverageCalculator
+# import reyax
+# import bincomms
+# import settings
 
-i2c = machine.I2C(settings.i2c_bus, sda=machine.Pin(settings.i2c_sda), scl=machine.Pin(settings.i2c_scl))
-if 60 not in i2c.scan():
-    led = machine.Pin("LED", machine.Pin.OUT)
-    while True:
-        led.on()
-        time.sleep(0.5)
-        led.off()
-        time.sleep(0.5)
-oled = ssd1306.SSD1306_I2C(128, 64, i2c)
+# i2c = machine.I2C(settings.i2c_bus, sda=machine.Pin(settings.i2c_sda), scl=machine.Pin(settings.i2c_scl))
+# if 60 not in i2c.scan():
+#     led = machine.Pin("LED", machine.Pin.OUT)
+#     while True:
+#         led.on()
+#         time.sleep(0.5)
+#         led.off()
+#         time.sleep(0.5)
+# oled = ssd1306.SSD1306_I2C(128, 64, i2c)
 
-dc = DisplayController(oled)
-dc.page = "neutralization"
-dc.display()
+# dc = DisplayController(oled)
+# dc.page = "neutralization"
+# dc.display()
