@@ -139,6 +139,18 @@ class DisplayController:
             # back button (selected)
             self._oled.text("+back+", 40, 56)
 
+        elif self.page.startswith("neutralization"):
+            self._oled.text("neutralize", 24, 0)
+            self._oled.text("inputs", 40, 12)
+
+            #self._oled.text("pot1", 48, 24)
+            self._oled.text("pot1 set!", 28, 24)
+            self._oled.rect(0, 34, 128, 8, 1, False)
+
+            #self._oled.text("pot2", 48, 46)
+            self._oled.text("pot2 set!", 28, 46)
+            self._oled.rect(0, 56, 128, 8, 1, False)
+
         else:
             self._oled.text("?", 0, 0)
 
@@ -271,3 +283,26 @@ class ControllerBrain:
         vbat_reading_smoothed:int = int(self.battery_wac.feed(float(vbat_reading))) # pass it through a weighted average filter (smooth it out)
         battery_voltage:float = 3.01 + (((vbat_reading_smoothed - 38800) / (54000 - 38800)) * (4.21 - 3.01)) # calculate the voltage on the pin based upon a test of known values (tested reading at 4.2V and reading at 3.0V)
         self.DisplayController.controller_soc = self.battery_monitor.soc(battery_voltage) # you may be wondering "Well don't you have to un-do the voltage divider?". Normally, yes, we do. But when I laid out the math and did the min/max formula, I was already taking that into account. So therefore, we dont have to here!
+
+
+import machine
+import ssd1306
+import time
+import WeightedAverageCalculator
+import reyax
+import bincomms
+import settings
+
+i2c = machine.I2C(settings.i2c_bus, sda=machine.Pin(settings.i2c_sda), scl=machine.Pin(settings.i2c_scl))
+if 60 not in i2c.scan():
+    led = machine.Pin("LED", machine.Pin.OUT)
+    while True:
+        led.on()
+        time.sleep(0.5)
+        led.off()
+        time.sleep(0.5)
+oled = ssd1306.SSD1306_I2C(128, 64, i2c)
+
+dc = DisplayController(oled)
+dc.page = "neutralization"
+dc.display()
