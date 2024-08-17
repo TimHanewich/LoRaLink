@@ -2,7 +2,7 @@
 A fully 3D-printed remote controller that uses Long Range (LoRa) radio communications to control an RC car.
 
 ## Onboard Components
-LoRaLink has quite a few components that serve various functions, including control input, communication, GUI display, etc.:
+LoRaLink has quite a few physical components that serve various functions, including control input, communication, GUI display, etc.:
 - 1 [SSD-1306 OLED display](https://a.co/d/6dm97JF) (128x64)
 - 3 [16MM Push Buttons](https://a.co/d/9F2s5Ny)
 - 2 [B10K Potentiometers](https://a.co/d/18x64NA) (knobs)
