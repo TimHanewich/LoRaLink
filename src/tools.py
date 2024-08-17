@@ -181,11 +181,11 @@ class ControllerBrain:
 
     def set_pot1(self, reading:float) -> None:
         if self.page[0:4] == "home":
-            self.DisplayController.throttle = reading
+            self.DisplayController.throttle = (reading - 0.5) * 2 # convert the value that is between 0.0 and 1.0 to a value between -1.0 and 1.0
         
     def set_pot2(self, reading:float) -> None:
         if self.page[0:4] == "home":
-            self.DisplayController.steer = reading
+            self.DisplayController.steer = (reading - 0.5) * 2 # convert the value that is between 0.0 and 1.0 to a value between -1.0 and 1.0
 
     def push_button1(self) -> None:
         if self.page[0:4] == "home":
