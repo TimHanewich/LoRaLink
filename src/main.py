@@ -93,7 +93,6 @@ CONTROLLER:tools.ControllerBrain = tools.ControllerBrain(oled, lora, battery_adc
 
 # neutralization?
 if settings.neutralization:
-    CONTROLLER.goto("neutralization")
     while True:
 
         # get reading of pots
@@ -101,10 +100,6 @@ if settings.neutralization:
         pot2r:float = (65535 - pot2.read_u16()) / 65535 # get reading of pot2 as a percentage
         pot1r = pot1_wac.feed(pot1r) # pass pot1 reading through weighted average filter
         pot2r = pot2_wac.feed(pot2r) # pass pot2 reading through weighted average filter
-
-        # set position in the controller so the display will update
-        CONTROLLER.set_pot1(pot1r)
-        CONTROLLER.set_pot2(pot2r)
 
         # if both are around the neutral position, move along
         range_of_50percent:float = 0.02
@@ -114,7 +109,19 @@ if settings.neutralization:
             break
 
         # display
-        CONTROLLER.display()
+        oled.text("neutralize", 24, 0)
+        oled.text("inputs", 40, 12)
+
+        # set pot 1 values
+        #self._oled.text("pot1", 48, 24)
+        oled.text("pot1 set!", 28, 24)
+        oled.rect(0, 34, 128, 8, 1, False) # frame
+        oled.rect(61, 34, 6, 8, 1, False) # goal frame
+
+        # set pot 2 values
+        #self._oled.text("pot2", 48, 46)
+        oled.text("pot2 set!", 28, 46)
+        oled.rect(0, 56, 128, 8, 1, False)
 
         # small delay
         time.sleep_ms(10)
