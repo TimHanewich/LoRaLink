@@ -254,7 +254,7 @@ class ControllerBrain:
         if rm != None:
             self.DisplayController.stat_received += 1 # increment # of messages received
 
-            if len(rm.data) == len(bincomms.OperationalResponse().encode()):
+            if bincomms.is_OperationalResponse(rm.data): # confirm if it is an operational response
                 opresp = bincomms.OperationalResponse()
                 opresp.decode(rm.data)
                 self.DisplayController.drone_soc = opresp.battery
@@ -262,7 +262,7 @@ class ControllerBrain:
                 # mark last time received as now
                 self.last_time_received_ticks_ms = time.ticks_ms()
             else:
-                print("Unknown message of length " + str(len(rm.data)) + " received. Ignoring.")
+                print("Message of length " + str(len(rm.data)) + " received, but it is not an OperationalResponse. Ignoring.")
 
         # if we havent received a message in a long time, turn on the "NO RESP" flag. If we have gotten one recently, turn off that flag!
         if (time.ticks_ms() - self.last_time_received_ticks_ms) > 10000: # we havent received for 10 seconds
