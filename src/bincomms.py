@@ -115,3 +115,35 @@ class OperationalResponse:
         batint:int = binary.bits_to_byte([False, False, bits[2], bits[3], bits[4], bits[5], bits[6], bits[7]])
         batf:float = batint / 63
         self.battery = batf
+
+# type checks
+
+def is_pulse_call(data:bytes) -> bool:
+    if len(data) != 1:
+        return False
+    else:
+        return data[0] == pulse_call
+
+def is_pulse_echo(data:bytes) -> bool:
+    if len(data) != 1:
+        return False
+    else:
+        return data[0] == pulse_echo
+
+def is_OperationalCommand(data:bytes) -> bool:
+    sample:bytes = OperationalCommand().encode()
+    if len(data) != len(sample):
+        return False
+    else:
+        bits:list[bool] = binary.byte_to_bits(data[0])
+        samplebits:list[bool] = binary.byte_to_bits(sample[0]) 
+        return bits[0] == samplebits[0] and bits[1] == samplebits[1]
+    
+def is_OperationalResponse(data:bytes) -> bool:
+    sample:bytes = OperationalResponse().encode()
+    if len(data) != len(sample):
+        return False
+    else:
+        bits:list[bool] = binary.byte_to_bits(data[0])
+        samplebits:list[bool] = binary.byte_to_bits(sample[0]) 
+        return bits[0] == samplebits[0] and bits[1] == samplebits[1]
