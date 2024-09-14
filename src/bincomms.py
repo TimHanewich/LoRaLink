@@ -61,7 +61,7 @@ class OperationalCommand:
 
         # validate that it is an operational command
         if is_OperationalCommand(bs) == False:
-            raise Exception("Provided bytes '" + str(bytes) + "' are not a valid OperationalCommand! Cannot decode as one.")
+            raise Exception("Provided bytes '" + str(bs) + "' are not a valid OperationalCommand! Cannot decode as one.")
         
         # decode
         b1bits:list[bool] = binary.byte_to_bits(bs[0])
