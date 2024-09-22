@@ -29,11 +29,11 @@ The wiring diagram for the LoRaLink controller is included below. However, you c
 ## Assembly
 I've provided the STL files for this design that you can 3D-print yourself on Thingiverse [here](https://www.thingiverse.com/thing:6729642). Altogether, there are three parts you'll need to print:
 
-|Name|Description|Grams of PLA (20% infill)|
-|-|-|-|
-|bottom.stl|The "box" of the controller, that each electronic component will go into|40|
-|top.stl|The top plate of the controller that the power switch, SSD-1306, potentiometers, and buttons will be mounted to|12|
-|18650_frame.stl|A frame to hold the 18650 battery. Wrap wires around both ends to touch each terminal. Screw this into the bottom.stl|9|
+- **bottom.stl** - The "box" of the controller, that each electronic component will go into.
+    - **bottom_v2.stl** - Raspberry Pi Pico USB is now accessible from the side. TP4056 moved over a bit to make room.
+    - **bottom_v3.stl** - 20mm taller (to better accomodate electronics).
+- **top.stl** - The top plate of the controller that the power switch, SSD-1306, potentiometers, and buttons will be mounted to.
+- **18650_frame.stl** - A frame to hold the 18650 battery. Wrap wires around both ends to touch each terminal. Screw this into the bottom.stl.
 
 ## Communication Protocol
 I've designed a minimalistic, lightweight, robust communication protocol to allow communications between the LoRaLink controller and the device that it is being controller.
