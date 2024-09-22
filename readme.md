@@ -27,7 +27,7 @@ The wiring diagram for the LoRaLink controller is included below. However, you c
 ![wiring](https://i.imgur.com/a1LYTrq.png)
 
 ## Assembly
-I've provided the STL files for this design that you can 3D-print yourself on Thingiverse [here](https://www.thingiverse.com/thing:6729642). Altogether, there are three parts you'll need to print:
+I've provided the STL files for this design that you can 3D-print yourself [on Thingiverse here](https://www.thingiverse.com/thing:6729642). Altogether, there are three parts you'll need to print:
 
 - **bottom.stl** - The "box" of the controller, that each electronic component will go into.
     - **bottom_v2.stl** - Raspberry Pi Pico USB is now accessible from the side. TP4056 moved over a bit to make room.
