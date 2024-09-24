@@ -16,6 +16,14 @@ led.on()
 time.sleep(flash_time)
 led.off()
 
+# declare FATAL FAILURE PATTERN
+def FATAL_FAILURE() -> None:
+    while True:
+        led.on()
+        time.sleep(1)
+        led.off()
+        time.sleep(1)
+
 # first step: set up SSD-1306
 # we do this first so the loading sign is shown, indicating life.
 # do to this right away, before loading any other modules (those take time to load into memory)
@@ -23,11 +31,7 @@ import settings
 import ssd1306
 i2c = machine.I2C(settings.i2c_bus, sda=machine.Pin(settings.i2c_sda), scl=machine.Pin(settings.i2c_scl))
 if 60 not in i2c.scan(): # if the SSD-1306 is not detected on the I2C line
-    while True: # infinite "failure" pattern
-        led.on()
-        time.sleep(1)
-        led.off()
-        time.sleep(1)
+    FATAL_FAILURE()
 oled = ssd1306.SSD1306_I2C(128, 64, i2c)
 oled.text("Loading...", 0, 0)
 oled.show()
