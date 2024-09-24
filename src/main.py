@@ -18,6 +18,8 @@ led.off()
 # first step: set up SSD-1306
 # we do this first so the loading sign is shown, indicating life.
 # do to this right away, before loading any other modules (those take time to load into memory)
+import settings
+import ssd1306
 i2c = machine.I2C(settings.i2c_bus, sda=machine.Pin(settings.i2c_sda), scl=machine.Pin(settings.i2c_scl))
 if 60 not in i2c.scan(): # if the SSD-1306 is not detected on the I2C line
     while True: # infinite "failure" pattern
@@ -30,13 +32,11 @@ oled.text("Loading...", 0, 0)
 oled.show()
 
 # other imports
-import ssd1306
 import WeightedAverageCalculator
 import reyax
 import bincomms
 import framebuf
 import tools
-import settings
 
 # set up ADC for reading internal battery level
 battery_adc = machine.ADC(machine.Pin(settings.battery_adc_gpio))
