@@ -3,17 +3,17 @@ import time
 
 # first strobe the onboard LED light for a moment
 led = machine.Pin("LED", machine.Pin.OUT)
-flash_time:float = 0.1
+boot_flash_time:float = 0.1
 led.on()
-time.sleep(flash_time)
+time.sleep(boot_flash_time)
 led.off()
-time.sleep(flash_time)
+time.sleep(boot_flash_time)
 led.on()
-time.sleep(flash_time)
+time.sleep(boot_flash_time)
 led.off()
-time.sleep(flash_time)
+time.sleep(boot_flash_time)
 led.on()
-time.sleep(flash_time)
+time.sleep(boot_flash_time)
 led.off()
 
 # declare FATAL FAILURE PATTERN
