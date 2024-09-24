@@ -35,6 +35,9 @@ I've provided the STL files for this design that you can 3D-print yourself [on T
 - **top.stl** - The top plate of the controller that the power switch, SSD-1306, potentiometers, and buttons will be mounted to.
 - **18650_frame.stl** - A frame to hold the 18650 battery. Wrap wires around both ends to touch each terminal. Screw this into the bottom.stl.
 
+## Changelog
+For a full changelog, view the [changelog.md file](./changelog.md).
+
 ## Communication Protocol
 I've designed a minimalistic, lightweight, robust communication protocol to allow communications between the LoRaLink controller and the device that it is being controller.
 
