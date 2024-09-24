@@ -24,7 +24,7 @@ In addition to the components above, you'll also need:
 ## Wiring
 The wiring diagram for the LoRaLink controller is included below. However, you can open [the schematic file](./schematic.drawio) on [draw.io](https://draw.io) as well (may be a bit easier to read).
 
-![wiring](https://i.imgur.com/bUTsDuQ.png)
+![wiring](https://i.imgur.com/AEwbjDC.png)
 
 ## Assembly
 I've provided the STL files for this design that you can 3D-print yourself [on Thingiverse here](https://www.thingiverse.com/thing:6729642). Altogether, there are three parts you'll need to print:

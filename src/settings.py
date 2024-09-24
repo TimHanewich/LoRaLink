@@ -8,8 +8,8 @@ i2c_scl:int = 13
 
 # ADC GPIO's
 battery_adc_gpio:int = 28
-left_pot_adc_gpio:int = 26
-right_pot_adc_gpio:int = 27
+left_pot_adc_gpio:int = 27
+right_pot_adc_gpio:int = 26
 
 # buttons
 left_button_gpio:int = 0
