@@ -3,16 +3,17 @@ import time
 
 # first strobe the onboard LED light for a moment
 led = machine.Pin("LED", machine.Pin.OUT)
+flash_time:float = 0.1
 led.on()
-time.sleep(0.25)
+time.sleep(flash_time)
 led.off()
-time.sleep(0.25)
+time.sleep(flash_time)
 led.on()
-time.sleep(0.25)
+time.sleep(flash_time)
 led.off()
-time.sleep(0.25)
+time.sleep(flash_time)
 led.on()
-time.sleep(0.25)
+time.sleep(flash_time)
 led.off()
 
 # first step: set up SSD-1306
