@@ -24,6 +24,8 @@ def FATAL_FAILURE() -> None:
         led.off()
         time.sleep(1)
 
+# Continue with program!
+# but continue in a massive try bracket that will catch any non-handled fatal failures and display a pulse pattern
 try:
 
     # first step: set up SSD-1306
