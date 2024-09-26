@@ -159,6 +159,7 @@ class ControllerBrain:
 
         # set up last time sent and last time received
         self.last_time_sent_ticks_ms:int = 0
+        self.last_sent:bytes = None # the byte-equivalent (encoded) OperationalCommand we most recently sent.
         self.last_time_received_ticks_ms:int = 0
 
         # set up battery adc
@@ -236,17 +237,29 @@ class ControllerBrain:
         if self.page.startswith("home"): # are we on home?
             if (time.ticks_ms() - self.last_time_sent_ticks_ms) >= 250: # is it time to send?
 
-                # send the ControlCommand!
+                # Draft up the ControlCommand! (what will be sent)
                 opcmd = bincomms.OperationalCommand()
                 opcmd.throttle = self.DisplayController.throttle
                 opcmd.steer = self.DisplayController.steer
                 to_send:bytes = opcmd.encode()
-                self.lora.send(1, to_send)
 
-                # increment sent counter
-                self.DisplayController.stat_sent += 1
+                # before sending, make sure the one that we are about to send is indeed different than the last one we sent (there is an update in controls to send).
+                if to_send != self.last_sent:
+
+                    # send it!
+                    self.lora.send(1, to_send)
+
+                    # mark the last sent
+                    self.last_sent = to_send
+
+                    # increment sent counter
+                    self.DisplayController.stat_sent += 1
+
 
                 # mark last sent time
+                # of course there is a chance it wasn't really sent.
+                # however, we can treat this like the "last ATTEMPTED send"
+                # otherwise, if we didn't increment this, it would perform that check every loop (likely freeze)
                 self.last_time_sent_ticks_ms = time.ticks_ms()
         
         # try to receive
