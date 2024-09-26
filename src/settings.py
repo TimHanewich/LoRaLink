@@ -1,5 +1,5 @@
 # VERSION NUMBER
-VERSION:str = "0.2.2"
+VERSION:str = "0.3.0"
 
 # I2C settings (for the SSD-1306 OELD display)
 i2c_bus:int = 0
